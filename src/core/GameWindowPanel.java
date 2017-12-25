@@ -43,7 +43,7 @@ public class GameWindowPanel extends JPanel implements ActionListener {
     game = new Game();
     
     // Initialize image
-    offscreen = createImage(game.getScreenWidth(), game.getScreenHeight());
+    offscreen = createImage(Game.getScreenWidth(), Game.getScreenHeight());
     bufferGraphics = offscreen.getGraphics(); 
    
     // Keyboard inputs

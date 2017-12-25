@@ -6,7 +6,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import entity.Entity;
-import entity.ParticleEmitter;
+import entity.particle.FireworksEmitter;
+import entity.particle.Particle;
+import entity.particle.ParticleDrawer;
 
 public class TestScreen extends GameScreen {
   
@@ -15,7 +17,13 @@ public class TestScreen extends GameScreen {
   TestScreen(ScreenType type, Map<String, String> globalGameConfig) {
     super(type);
     entities = new TreeSet<Entity>();
-    entities.add(new ParticleEmitter(50));
+    entities.add(new FireworksEmitter(200,200,50, 2, 60, 2, 1, new ParticleDrawer() {
+      private int w = 5;
+      @Override
+      public void draw(Graphics g, Particle p) {
+        g.drawRect(p.gx() - w / 2, p.gy() - w / 2, w, w);
+      }
+    }));
   }
 
   private Set<Entity> getEntities() {
