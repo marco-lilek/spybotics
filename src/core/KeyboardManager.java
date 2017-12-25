@@ -23,7 +23,6 @@ public class KeyboardManager {
 
   public void handleKeyStroke(ActionEvent e) {
     // TODO Auto-generated method stub
-    System.out.println("key pressed");
     
   }
 }
