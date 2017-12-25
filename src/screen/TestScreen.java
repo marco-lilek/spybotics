@@ -17,7 +17,7 @@ public class TestScreen extends GameScreen {
   TestScreen(ScreenType type, Map<String, String> globalGameConfig) {
     super(type);
     entities = new TreeSet<Entity>();
-    entities.add(new FireworksEmitter(200,200,50, 2, 60, 2, 1, new ParticleDrawer() {
+    entities.add(new FireworksEmitter(200,200,50, 2, 60, 0, 2, new ParticleDrawer() {
       private int w = 5;
       @Override
       public void draw(Graphics g, Particle p) {

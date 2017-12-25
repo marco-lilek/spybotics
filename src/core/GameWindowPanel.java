@@ -34,9 +34,11 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   
   @Override
   protected void paintComponent(Graphics g) {
-    game.redraw(bufferGraphics);
-    g.drawImage(offscreen, 0, 0, this);
-    Toolkit.getDefaultToolkit().sync();
+    if (game != null && bufferGraphics != null) {
+      game.redraw(bufferGraphics);
+      g.drawImage(offscreen, 0, 0, this);
+      Toolkit.getDefaultToolkit().sync();
+    }
   }
   
   public void init() {
