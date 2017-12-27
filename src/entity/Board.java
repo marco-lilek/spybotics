@@ -38,7 +38,7 @@ public class Board extends Entity {
   }
 
   @Override
-  public void tick(Set<String> pressedKeys) {
+  public void tick() {
     // TODO Auto-generated method stub
     
   }

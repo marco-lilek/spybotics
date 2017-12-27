@@ -6,7 +6,7 @@ import java.util.Set;
 public abstract class Entity implements Comparable {
 
   public abstract void redraw(Graphics g);
-  public abstract void tick(Set<String> pressedKeys);
+  public abstract void tick();
   
   @Override
   public int compareTo(Object arg0) {

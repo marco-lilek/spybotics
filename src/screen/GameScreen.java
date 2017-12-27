@@ -1,9 +1,11 @@
 package screen;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.util.Set;
 import java.util.TreeSet;
 
+import core.keyboard.Key;
 import entity.Entity;
 
 public abstract class GameScreen {
@@ -14,11 +16,12 @@ public abstract class GameScreen {
     this.type = type;
   }
   
-  public abstract ScreenType tick(Set<String> activeKeys);
+  public abstract ScreenType tick();
   public abstract void redraw(Graphics g);
   
   public ScreenType getType() {
     return type;
   }
-  
+
+  public abstract void handleKeyStroke(Key msgFromKeyboard);
 }

@@ -9,18 +9,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+
+import core.keyboard.Key;
+import core.keyboard.KeyboardManager;
 import screen.GameScreen;
 import screen.GameScreenFactory;
 import screen.ScreenType;
+import util.CallbackListener;
 
-public class Game {
+public class Game implements CallbackListener<Key> {
 
   private KeyboardManager keyboardManager;
   private Map<String, String> globalGameConfig;
   private GameScreen activeScreen;
   
-  Game() {
-    keyboardManager = new KeyboardManager();
+  Game(KeyboardManager keyboardManager) {
+    keyboardManager.addListener(this);
     globalGameConfig = new HashMap<String, String>();
     activeScreen = GameScreenFactory.getScreen(ScreenType.TEST_SCREEN, globalGameConfig);
   }
@@ -46,19 +52,17 @@ public class Game {
   }
   
   public void tick() {
-    ScreenType nextScreenType = activeScreen.tick(keyboardManager.getPressedKeys());
+    ScreenType nextScreenType = activeScreen.tick();
     if (nextScreenType != activeScreen.getType()) {
       // Transition to a new screen, deletes all entities in the active screen
       activeScreen = GameScreenFactory.getScreen(nextScreenType, globalGameConfig);
     }
     
   }
-  
-  public void handleKeyStroke(ActionEvent e) {
-    keyboardManager.handleKeyStroke(e);
+
+  @Override
+  public void callback(Key msgFromKeyboard) {
+    activeScreen.handleKeyStroke(msgFromKeyboard);
   }
-  
-  public Set<Map.Entry<String, String>> getKeyStrokeActionMap() {
-    return keyboardManager.getKeyStrokeActionMap();
-  }
+
 }

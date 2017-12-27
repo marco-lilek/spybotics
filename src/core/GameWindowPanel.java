@@ -21,9 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
+import core.keyboard.KeyboardManager;
+
 public class GameWindowPanel extends JPanel implements ActionListener {  
   
   private Game game;
+  private KeyboardManager keyboardManager;
   private Graphics bufferGraphics;
   private Image offscreen;
   
@@ -42,24 +45,13 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   }
   
   public void init() {
-    game = new Game();
-    
     // Initialize image
     offscreen = createImage(Game.getScreenWidth(), Game.getScreenHeight());
     bufferGraphics = offscreen.getGraphics(); 
-   
-    // Keyboard inputs
-    Action forwardEventToGameAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        game.handleKeyStroke(e);
-      }
-    };
-    InputMap inputMap = this.getInputMap();
-    ActionMap actionMap = this.getActionMap();
-    for (Map.Entry<String, String> entry : game.getKeyStrokeActionMap()) {
-      inputMap.put(KeyStroke.getKeyStroke(entry.getKey()), entry.getValue());
-      actionMap.put(entry.getValue(), forwardEventToGameAction);
-    }
+    
+    keyboardManager = new KeyboardManager(this.getInputMap(), this.getActionMap());
+    game = new Game(keyboardManager);
+    
     
     // Tick, 60fps
     Timer tickTimer = new Timer(20, this);

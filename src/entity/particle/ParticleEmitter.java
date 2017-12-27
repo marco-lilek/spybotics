@@ -29,7 +29,7 @@ public abstract class ParticleEmitter extends Entity {
   protected abstract Particle createParticle();
   
   @Override
-  public void tick(Set<String> pressedKeys) {
+  public void tick() {
     Set<Particle> toRemove = new TreeSet<Particle>();
     for (Particle particle : particles) {
       if (!particle.update()) {

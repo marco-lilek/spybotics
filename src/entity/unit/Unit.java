@@ -24,9 +24,14 @@ public class Unit extends Entity {
   }
 
   @Override
-  public void tick(Set<String> pressedKeys) {
+  public void tick() {
     // TODO: move out control logic to the screen w/ forwarding
     
+  }
+
+  public void move(int xd, int yd) {
+    x += xd;
+    y += yd;
   }
 
 }

@@ -1,8 +1,10 @@
 package screen;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.util.Set;
 
+import core.keyboard.Key;
 import entity.Board;
 import entity.unit.Unit;
 
@@ -18,8 +20,8 @@ public class LevelScreen extends GameScreen {
   }
 
   @Override
-  public ScreenType tick(Set<String> activeKeys) {
-    testPlayer.tick(activeKeys);
+  public ScreenType tick() {
+    testPlayer.tick();
     return this.getType();
   }
 
@@ -27,6 +29,14 @@ public class LevelScreen extends GameScreen {
   public void redraw(Graphics g) {
     board.redraw(g);
     testPlayer.redraw(g);
+  }
+
+  @Override
+  public void handleKeyStroke(Key key) {
+    switch (key) {
+      default:
+        testPlayer.move(-1, 0);
+    }
   }
 
 }

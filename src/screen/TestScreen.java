@@ -1,10 +1,12 @@
 package screen;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import core.keyboard.Key;
 import entity.Entity;
 import entity.particle.FireworksEmitter;
 import entity.particle.Particle;
@@ -26,14 +28,10 @@ public class TestScreen extends GameScreen {
     }));
   }
 
-  private Set<Entity> getEntities() {
-    return null;
-  }
-
   @Override
-  public ScreenType tick(Set<String> pressedKeys) {
+  public ScreenType tick() {
     for (Entity entity : entities) {
-      entity.tick(pressedKeys);
+      entity.tick();
     }
     return this.getType();
   }
@@ -43,6 +41,12 @@ public class TestScreen extends GameScreen {
     for (Entity entity : entities) {
       entity.redraw(g);
     }
+  }
+
+  @Override
+  public void handleKeyStroke(Key key) {
+    // TODO Auto-generated method stub
+    
   }
 
 }
