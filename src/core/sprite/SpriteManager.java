@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.google.gson.Gson;
+
 public class SpriteManager {
   private static final SpriteManager manager = new SpriteManager();
   

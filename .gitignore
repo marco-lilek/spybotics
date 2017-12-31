@@ -1,3 +1,4 @@
 bin
+target
 # for now dont store, figure out how to hold binaries
 resources

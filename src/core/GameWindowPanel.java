@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
+import com.google.gson.Gson;
+
 import core.keyboard.KeyboardManager;
 
 public class GameWindowPanel extends JPanel implements ActionListener {  
@@ -61,6 +63,9 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   public static void main(String[] args) {
     System.out.println("Starting game");
     System.out.println(System.getProperty("user.dir"));
+
+    Gson g = new Gson();
+    System.out.println(g.getClass());
     
     JFrame frame = new JFrame();
     GameWindowPanel gameWindowPanel = new GameWindowPanel();
