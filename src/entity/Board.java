@@ -1,35 +1,47 @@
 package entity;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Set;
 
 import entity.unit.Unit;
 
 public class Board extends Entity {
-  private int widthTiles, heightTiles;
-  private int xOffset, yOffset;
+  private static final int WIDTH_TILES = 16;
+  private static final int HEIGHT_TILES = 14;
+  private static final int XOFFSET = 300;
+  private static final int YOFFSET = 30;
   private static final int TILEW = 32;
   private static final int TILEH = 32;
+  private static final int TILESPACE = 4;
+  private static final int XPADDING = 30;
+  private static final int YPADDING = 30;
+  
+  public static int getBoardScreenWidth() {
+    return offsetTilex(WIDTH_TILES) + XPADDING;
+  }
+  
+  public static int getBoardScreenHeight() {
+    return offsetTiley(HEIGHT_TILES) + YPADDING;
+  }
   
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   
-  public Board(int widthTiles, int heightTiles) {
-    this.widthTiles = widthTiles;
-    this.heightTiles = heightTiles;
-    this.xOffset = 64;
-    this.yOffset = 64;
-    floorTiles = new boolean[this.widthTiles][this.heightTiles];
+  public Board() {
+    floorTiles = new boolean[WIDTH_TILES][HEIGHT_TILES];
     
-    floorTiles[3][4] = true;
+    //floorTiles[3][4] = true;
     
-    unitAtTiles = new Unit[this.widthTiles][this.heightTiles];
+    unitAtTiles = new Unit[WIDTH_TILES][HEIGHT_TILES];
   }
 
   @Override
   public void redraw(Graphics g) {
-    for (int i = 0; i < widthTiles; i++) {
-      for (int j = 0; j < heightTiles; j++) {
+    g.drawRect(XOFFSET, YOFFSET, offsetTilex(WIDTH_TILES - 1) - XOFFSET, offsetTiley(HEIGHT_TILES - 1) - YOFFSET);
+    for (int i = 0; i < WIDTH_TILES; i++) {
+      for (int j = 0; j < HEIGHT_TILES; j++) {
         if (floorTiles[i][j]) {
           g.drawRect(offsetTilex(i), offsetTiley(j), TILEW, TILEH);
         }
@@ -43,25 +55,26 @@ public class Board extends Entity {
     
   }
   
-  public void drawTile(Graphics g, int x, int y, boolean fill) {
+  public void drawUnitTile(Graphics g, int x, int y, boolean fill) {
     int adjX = offsetTilex(x);
     int adjY = offsetTiley(y);
-    if (fill) {
-      g.fillRect(adjX, adjY, TILEW, TILEH);
-    } else {
-      g.drawRect(adjX, adjY, TILEW, TILEH);
-    }
+    g.setColor(new Color(212,28,28));
+    g.fillRect(adjX + TILESPACE / 2, adjY + TILESPACE / 2, TILEW, TILEH);
+    
+    g.setColor(new Color(22,160,22));
+    g.fillRect(adjX, adjY, TILEW, TILEH);
+    g.setColor(new Color(0,0,0));
   }
 
   public void addUnitAt(int x, int y, Unit u) {
     this.unitAtTiles[x][y] = u;
   }
   
-  private int offsetTilex(int x) {
-    return xOffset + x * TILEW;
+  private static int offsetTilex(int x) {
+    return XOFFSET + x * (TILEW + TILESPACE);
   }
   
-  private int offsetTiley(int y) {
-    return yOffset + y * TILEH;
+  private static int offsetTiley(int y) {
+    return YOFFSET + y * (TILEH + TILESPACE);
   }
 }

@@ -8,11 +8,11 @@ import java.util.TreeSet;
 import core.keyboard.Key;
 import entity.Entity;
 
-public abstract class GameScreen {
+public abstract class Screen {
   
   private ScreenType type;
   
-  GameScreen(ScreenType type) {
+  Screen(ScreenType type) {
     this.type = type;
   }
   

@@ -8,14 +8,14 @@ import core.keyboard.Key;
 import entity.Board;
 import entity.unit.Unit;
 
-public class LevelScreen extends GameScreen {
+public class MatchScreen extends Screen {
 
   private Unit testPlayer;
   private Board board;
   
-  LevelScreen(ScreenType type) { // TODO: load in level config 
+  MatchScreen(ScreenType type) { // TODO: load in level config 
     super(type);
-    board = new Board(10, 10);
+    board = new Board();
     testPlayer = new Unit(0, 0, board);
   }
 

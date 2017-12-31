@@ -12,7 +12,7 @@ import entity.particle.FireworksEmitter;
 import entity.particle.Particle;
 import entity.particle.ParticleDrawer;
 
-public class TestScreen extends GameScreen {
+public class TestScreen extends Screen {
   
   private Set<Entity> entities;
   

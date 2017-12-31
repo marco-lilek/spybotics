@@ -30,9 +30,9 @@ public class Unit extends Entity {
   public void redraw(Graphics g) {
     for (Iterator<Point> it = tail.keySet().iterator(); it.hasNext(); ) {
       Point p = it.next();
-      board.drawTile(g, (int)p.getX(), (int)p.getY(), true);
+      board.drawUnitTile(g, (int)p.getX(), (int)p.getY(), true);
     }
-    board.drawTile(g, x, y, false);
+    board.drawUnitTile(g, x, y, false);
   }
 
   @Override
