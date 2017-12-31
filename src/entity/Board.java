@@ -43,32 +43,25 @@ public class Board extends Entity {
     
   }
   
-  private int getxOffset() {
-    return xOffset;
-  }
-  
-  private int getyOffset() {
-    return yOffset;
-  }
-  
-  public int offsetTilex(int tilex) {
-    return getxOffset() + tilex * TILEW;
-  }
-  
-  public int offsetTiley(int tiley) {
-    return getyOffset() + tiley * TILEH;
+  public void drawTile(Graphics g, int x, int y, boolean fill) {
+    int adjX = offsetTilex(x);
+    int adjY = offsetTiley(y);
+    if (fill) {
+      g.fillRect(adjX, adjY, TILEW, TILEH);
+    } else {
+      g.drawRect(adjX, adjY, TILEW, TILEH);
+    }
   }
 
   public void addUnitAt(int x, int y, Unit u) {
-    // TODO: throw error if tile is unavailable
     this.unitAtTiles[x][y] = u;
   }
   
-  public int getTilew() {
-    return TILEW;
+  private int offsetTilex(int x) {
+    return xOffset + x * TILEW;
   }
   
-  public int getTileh() {
-    return TILEH;
+  private int offsetTiley(int y) {
+    return yOffset + y * TILEH;
   }
 }

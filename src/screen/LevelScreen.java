@@ -34,8 +34,18 @@ public class LevelScreen extends GameScreen {
   @Override
   public void handleKeyStroke(Key key) {
     switch (key) {
-      default:
+    case LEFT:
         testPlayer.move(-1, 0);
+        break;
+    case RIGHT:
+      testPlayer.move(1, 0);
+      break;
+    case UP:
+      testPlayer.move(0, -1);
+      break;
+    case DOWN:
+      testPlayer.move(0, 1);
+      break;
     }
   }
 
