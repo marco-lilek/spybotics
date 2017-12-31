@@ -60,6 +60,7 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   
   public static void main(String[] args) {
     System.out.println("Starting game");
+    System.out.println(System.getProperty("user.dir"));
     
     JFrame frame = new JFrame();
     GameWindowPanel gameWindowPanel = new GameWindowPanel();

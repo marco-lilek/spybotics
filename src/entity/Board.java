@@ -8,8 +8,8 @@ import entity.unit.Unit;
 public class Board extends Entity {
   private int widthTiles, heightTiles;
   private int xOffset, yOffset;
-  private static final int TILEW = 10;
-  private static final int TILEH = 10;
+  private static final int TILEW = 32;
+  private static final int TILEH = 32;
   
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
@@ -17,8 +17,8 @@ public class Board extends Entity {
   public Board(int widthTiles, int heightTiles) {
     this.widthTiles = widthTiles;
     this.heightTiles = heightTiles;
-    this.xOffset = 50;
-    this.yOffset = 50;
+    this.xOffset = 64;
+    this.yOffset = 64;
     floorTiles = new boolean[this.widthTiles][this.heightTiles];
     
     floorTiles[3][4] = true;

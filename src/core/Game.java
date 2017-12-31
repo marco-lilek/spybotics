@@ -14,6 +14,7 @@ import javax.swing.InputMap;
 
 import core.keyboard.Key;
 import core.keyboard.KeyboardManager;
+import core.sprite.SpriteManager;
 import screen.GameScreen;
 import screen.GameScreenFactory;
 import screen.ScreenType;
@@ -48,6 +49,7 @@ public class Game implements CallbackListener<Key> {
 
   public void redraw(Graphics g) {
     g.clearRect(0, 0, getScreenWidth(), getScreenHeight());
+    SpriteManager.getManager().drawSheet(g);
     activeScreen.redraw(g);
   }
   
