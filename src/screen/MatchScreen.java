@@ -4,10 +4,12 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.util.Set;
 
+import config.UnitConfig;
 import core.keyboard.Key;
 import core.sprite.SpriteManager;
 import entity.Board;
 import entity.unit.Unit;
+import util.JSONLoader;
 
 public class MatchScreen extends Screen {
 
@@ -17,7 +19,7 @@ public class MatchScreen extends Screen {
   MatchScreen(ScreenType type) { // TODO: load in level config 
     super(type);
     board = new Board();
-    testPlayer = new Unit(0, 0, board);
+    testPlayer = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class));
   }
 
   @Override

@@ -1,5 +1,6 @@
 package entity.unit;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Iterator;
@@ -7,21 +8,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import config.UnitConfig;
 import entity.Board;
 import entity.Entity;
+import util.Canvas;
 import util.Direction;
 import util.IPoint;
 
 public class Unit extends Entity {
 
   private Board board;
-  private int x,y, maxTailLength;
+  private int x,y;
   private Map<IPoint,Boolean> tail;
+  private UnitConfig unitConfig;
   
-  public Unit(int x, int y, Board board) {
+  public Unit(int x, int y, Board board, UnitConfig unitConfig) {
     this.x = x;
     this.y = y;
-    maxTailLength = 5;
+    this.unitConfig = unitConfig;
+    
     tail = new LinkedHashMap<IPoint,Boolean>();
     
     this.board = board;
@@ -35,24 +40,43 @@ public class Unit extends Entity {
       IPoint p = it.next();
       int px = p.gx();
       int py = p.gy();
-      board.drawTailTile(g, px, py, idx + 1);
+      drawTailTile(g, board.getDrawCanvas(px, py), idx + 1);
     }
-    board.drawHeadTile(g, x, y);
+    
+    drawHeadTile(g, board.getDrawCanvas(x, y));
+    //board.drawHeadTile(g, x, y);
   }
 
+
+  private void drawTile(Graphics g, Canvas drawCanvas) {
+    g.setColor(unitConfig.getRGB());
+    IPoint topLeft = drawCanvas.topLeft;
+    IPoint dimensions = drawCanvas.dimensions;
+    IPoint shadowOffset = board.getShadowOffset();
+    g.setColor(unitConfig.getRGB().darker());
+    g.fillRect(shadowOffset.gx() + topLeft.gx(), shadowOffset.gy() + topLeft.gy(), dimensions.gx(), dimensions.gy());
+    g.setColor(unitConfig.getRGB());
+    g.fillRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    g.setColor(new Color(0,0,0));
+  }
+  
+  public void drawTailTile(Graphics g, Canvas drawCanvas, int idx) {
+    IPoint topLeft = drawCanvas.topLeft;
+    IPoint dimensions = drawCanvas.dimensions;
+    drawTile(g, drawCanvas);
+    g.setColor(unitConfig.getRGB().darker().darker());
+    g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);
+    g.setColor(new Color(0,0,0));
+  }
+  
+  public void drawHeadTile(Graphics g, Canvas drawCanvas) {
+    drawTile(g, drawCanvas);
+  }
+  
   @Override
   public void tick() {
     // TODO: move out control logic to the screen w/ forwarding
     
-  }
-
-  private Direction getDirectionBetween(int fromx, int fromy, int tox, int toy) {
-    Direction dtoPrev = Direction.NONE;
-    if (tox == fromx - 1) dtoPrev = Direction.WEST;
-    if (tox == fromx + 1) dtoPrev = Direction.EAST;
-    if (toy == fromy - 1) dtoPrev = Direction.NORTH;
-    if (toy == fromy + 1) dtoPrev = Direction.SOUTH;
-    return dtoPrev;
   }
   
   public void move(int xd, int yd) {
@@ -61,7 +85,7 @@ public class Unit extends Entity {
     int yn = y + yd;
     
     tail.put(new IPoint(x,y), true);
-    if (tail.size() > maxTailLength) {
+    if (tail.size() > unitConfig.getMaxTailLength()) {
       IPoint top = tail.keySet().iterator().next();
       tail.remove(top);
     }

@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.util.Set;
 
 import entity.unit.Unit;
+import util.Canvas;
 import util.Direction;
 import util.IPoint;
 
@@ -58,29 +59,18 @@ public class Board extends Entity {
     
   }
   
-  private IPoint drawUnitTile(Graphics g, int x, int y) {
+  public Canvas getDrawCanvas(int x, int y) {
     int adjX = offsetTilex(x);
     int adjY = offsetTiley(y);
-    
-    // Shadow
-    g.setColor(new Color(212,28,28));
-    g.fillRect(adjX + TILESPACE / 2, adjY + TILESPACE / 2, TILEW, TILEW);
-    
-    g.setColor(new Color(22,160,22));
-    g.fillRect(adjX, adjY, TILEW, TILEW);
-    g.setColor(new Color(0,0,0));
-    return new IPoint(adjX, adjY);
+    IPoint topLeft = new IPoint(adjX, adjY);
+    IPoint dimensions = new IPoint(TILEW, TILEW);
+    return new Canvas(topLeft, dimensions);
   }
   
-  public void drawTailTile(Graphics g, int x, int y, int idx) {
-    IPoint p = drawUnitTile(g, x, y);
-    g.drawString(String.valueOf(idx), p.gx() + TILEW / 8, p.gy() + TILEW / 2);
+  public IPoint getShadowOffset() {
+    return new IPoint(TILESPACE / 2, TILESPACE / 2);
   }
   
-  public void drawHeadTile(Graphics g, int x, int y) {
-    drawUnitTile(g, x, y);
-  }
-
   public void addUnitAt(int x, int y, Unit u) {
     this.unitAtTiles[x][y] = u;
   }

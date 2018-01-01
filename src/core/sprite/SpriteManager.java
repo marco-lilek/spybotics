@@ -36,8 +36,7 @@ public class SpriteManager {
   }
   
   private static final SpriteManager manager = new SpriteManager();
-  
-  private Image spriteSheet; 
+  private Image spriteSheet;
   
   SpriteManager() {
     try {
