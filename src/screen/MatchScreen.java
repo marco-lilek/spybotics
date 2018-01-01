@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.util.Set;
 
 import core.keyboard.Key;
+import core.sprite.SpriteManager;
 import entity.Board;
 import entity.unit.Unit;
 
@@ -29,6 +30,8 @@ public class MatchScreen extends Screen {
   public void redraw(Graphics g) {
     board.redraw(g);
     testPlayer.redraw(g);
+
+    SpriteManager.getManager().drawSheet(g);
   }
 
   @Override

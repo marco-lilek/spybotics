@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import core.keyboard.Key;
+import core.sprite.SpriteManager;
 import entity.Entity;
 import entity.particle.FireworksEmitter;
 import entity.particle.Particle;
