@@ -16,18 +16,18 @@ import javax.imageio.ImageIO;
 import com.google.gson.Gson;
 
 public class SpriteManager {
-  private class FilterMarker extends RGBImageFilter {
-    private final int markerRGB;
+  private class FilterBGColor extends RGBImageFilter {
+    private final int bgColorRGB;
     
-    FilterMarker(Color marker) {
+    FilterBGColor(Color bgColor) {
       super();
-      markerRGB = marker.getRGB() & 0x00ffffff;
+      bgColorRGB = bgColor.getRGB() & 0x00ffffff;
     }
     
     @Override
     public int filterRGB(int x, int y, int rgb) {
       int transparentRGB = (rgb & 0x00ffffff);
-      if (transparentRGB == markerRGB) {
+      if (transparentRGB == bgColorRGB) {
         return transparentRGB;
       } else {
         return rgb;
@@ -41,14 +41,14 @@ public class SpriteManager {
   
   SpriteManager() {
     try {
-      spriteSheet = filterOutMarker(ImageIO.read(new File("resources/spritesheet.gif")), new Color(255, 0, 255));
+      spriteSheet = filterOutbgColor(ImageIO.read(new File("resources/spritesheet.gif")), new Color(255, 0, 255));
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
   
-  private Image filterOutMarker(Image im, Color marker) {
-    ImageFilter filter = new FilterMarker(marker);
+  private Image filterOutbgColor(Image im, Color bgColor) {
+    ImageFilter filter = new FilterBGColor(bgColor);
     
     ImageProducer ip = new FilteredImageSource(im.getSource(), filter);
     return Toolkit.getDefaultToolkit().createImage(ip);
