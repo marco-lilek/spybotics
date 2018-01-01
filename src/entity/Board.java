@@ -3,9 +3,13 @@ package entity;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Set;
 
 import entity.unit.Unit;
+import util.Direction;
+import util.IPoint;
 
 public class Board extends Entity {
   private static final int WIDTH_TILES = 16;
@@ -13,7 +17,6 @@ public class Board extends Entity {
   private static final int XOFFSET = 300;
   private static final int YOFFSET = 30;
   private static final int TILEW = 32;
-  private static final int TILEH = 32;
   private static final int TILESPACE = 4;
   private static final int XPADDING = 30;
   private static final int YPADDING = 30;
@@ -43,7 +46,7 @@ public class Board extends Entity {
     for (int i = 0; i < WIDTH_TILES; i++) {
       for (int j = 0; j < HEIGHT_TILES; j++) {
         if (floorTiles[i][j]) {
-          g.drawRect(offsetTilex(i), offsetTiley(j), TILEW, TILEH);
+          g.drawRect(offsetTilex(i), offsetTiley(j), TILEW, TILEW);
         }
       }
     }
@@ -55,15 +58,27 @@ public class Board extends Entity {
     
   }
   
-  public void drawUnitTile(Graphics g, int x, int y, boolean fill) {
+  private IPoint drawUnitTile(Graphics g, int x, int y) {
     int adjX = offsetTilex(x);
     int adjY = offsetTiley(y);
+    
+    // Shadow
     g.setColor(new Color(212,28,28));
-    g.fillRect(adjX + TILESPACE / 2, adjY + TILESPACE / 2, TILEW, TILEH);
+    g.fillRect(adjX + TILESPACE / 2, adjY + TILESPACE / 2, TILEW, TILEW);
     
     g.setColor(new Color(22,160,22));
-    g.fillRect(adjX, adjY, TILEW, TILEH);
+    g.fillRect(adjX, adjY, TILEW, TILEW);
     g.setColor(new Color(0,0,0));
+    return new IPoint(adjX, adjY);
+  }
+  
+  public void drawTailTile(Graphics g, int x, int y, int idx) {
+    IPoint p = drawUnitTile(g, x, y);
+    g.drawString(String.valueOf(idx), p.gx() + TILEW / 8, p.gy() + TILEW / 2);
+  }
+  
+  public void drawHeadTile(Graphics g, int x, int y) {
+    drawUnitTile(g, x, y);
   }
 
   public void addUnitAt(int x, int y, Unit u) {
@@ -75,6 +90,6 @@ public class Board extends Entity {
   }
   
   private static int offsetTiley(int y) {
-    return YOFFSET + y * (TILEH + TILESPACE);
+    return YOFFSET + y * (TILEW + TILESPACE);
   }
 }

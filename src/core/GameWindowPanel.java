@@ -54,7 +54,6 @@ public class GameWindowPanel extends JPanel implements ActionListener {
     keyboardManager = new KeyboardManager(this.getInputMap(), this.getActionMap());
     game = new Game(keyboardManager);
     
-    
     // Tick, 60fps
     Timer tickTimer = new Timer(20, this);
     tickTimer.start();
@@ -63,9 +62,6 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   public static void main(String[] args) {
     System.out.println("Starting game");
     System.out.println(System.getProperty("user.dir"));
-
-    Gson g = new Gson();
-    System.out.println(g.getClass());
     
     JFrame frame = new JFrame();
     GameWindowPanel gameWindowPanel = new GameWindowPanel();
