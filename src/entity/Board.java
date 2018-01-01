@@ -7,14 +7,15 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Set;
 
+import config.BoardConfig;
 import entity.unit.Unit;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
 
 public class Board extends Entity {
-  private static final int WIDTH_TILES = 16;
-  private static final int HEIGHT_TILES = 14;
+  private static final int WIDTH_TILES = 4;//16;
+  private static final int HEIGHT_TILES = 4;//14;
   private static final int XOFFSET = 300;
   private static final int YOFFSET = 30;
   private static final int TILEW = 32;
@@ -33,8 +34,9 @@ public class Board extends Entity {
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   
-  public Board() {
-    floorTiles = new boolean[WIDTH_TILES][HEIGHT_TILES];
+  public Board(BoardConfig boardConfig) {
+    // TODO: width and height here specifies the dim on the screen, but the actual board could be larger than the screen
+    this.floorTiles = boardConfig.getFloorTiles(); //new boolean[WIDTH_TILES][HEIGHT_TILES]; 
     
     //floorTiles[3][4] = true;
     
@@ -59,7 +61,7 @@ public class Board extends Entity {
     
   }
   
-  public Canvas getDrawCanvas(int x, int y) {
+  public Canvas getTileDrawCanvas(int x, int y) {
     int adjX = offsetTilex(x);
     int adjY = offsetTiley(y);
     IPoint topLeft = new IPoint(adjX, adjY);

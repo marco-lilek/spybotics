@@ -40,10 +40,10 @@ public class Unit extends Entity {
       IPoint p = it.next();
       int px = p.gx();
       int py = p.gy();
-      drawTailTile(g, board.getDrawCanvas(px, py), idx + 1);
+      drawTailTile(g, board.getTileDrawCanvas(px, py), idx + 1);
     }
     
-    drawHeadTile(g, board.getDrawCanvas(x, y));
+    drawHeadTile(g, board.getTileDrawCanvas(x, y));
     //board.drawHeadTile(g, x, y);
   }
 
@@ -62,7 +62,6 @@ public class Unit extends Entity {
   
   public void drawTailTile(Graphics g, Canvas drawCanvas, int idx) {
     IPoint topLeft = drawCanvas.topLeft;
-    IPoint dimensions = drawCanvas.dimensions;
     drawTile(g, drawCanvas);
     g.setColor(unitConfig.getRGB().darker().darker());
     g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);

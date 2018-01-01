@@ -1,0 +1,5 @@
+{
+  "tiles_file": "config/test_board_tiles.txt",
+  "board_width": 4,
+  "board_height": 4
+}
