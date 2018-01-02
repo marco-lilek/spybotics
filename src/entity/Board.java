@@ -28,8 +28,8 @@ public class Board extends Entity {
     this.drawCanvas = canvas;
     
     IPoint boardDimensions = canvas.dimensions;
-    canvasWidthTiles = boardDimensions.gx() / (TILEW + TILESPACE);
-    canvasHeightTiles = boardDimensions.gy() / (TILEW + TILESPACE);
+    canvasWidthTiles = Math.min(boardConfig.board_width, boardDimensions.gx() / getFullTileSize());
+    canvasHeightTiles = Math.min(boardConfig.board_height, boardDimensions.gy() / getFullTileSize());
     topLeftx = 0;
     topLefty = 0;
     
@@ -90,11 +90,11 @@ public class Board extends Entity {
   }
   
   private int offsetTilex(int x) {
-    return drawCanvas.topLeft.gx() + (x - topLeftx) * (TILEW + TILESPACE);
+    return drawCanvas.topLeft.gx() + (x - topLeftx) * getFullTileSize();
   }
   
   private int offsetTiley(int y) {
-    return drawCanvas.topLeft.gy() + (y - topLefty) * (TILEW + TILESPACE);
+    return drawCanvas.topLeft.gy() + (y - topLefty) * getFullTileSize();
   }
 
   public Canvas getTilesCanvas() {
@@ -116,5 +116,9 @@ public class Board extends Entity {
       topLeftx--;
       break;
     }
+  }
+
+  public static int getFullTileSize() {
+    return TILEW + TILESPACE;
   }
 }

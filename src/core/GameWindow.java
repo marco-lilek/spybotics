@@ -29,8 +29,8 @@ import util.IPoint;
 
 public class GameWindow extends JPanel implements ActionListener {
   
-  private static final int SCREEN_WIDTH = 1600;
-  private static final int SCREEN_HEIGHT = 700;
+  private static final int SCREEN_WIDTH = 800;
+  private static final int SCREEN_HEIGHT = 450;
   
   private Game game;
   private KeyboardManager keyboardManager;

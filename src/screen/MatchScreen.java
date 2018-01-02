@@ -17,14 +17,17 @@ import util.JSONLoader;
 
 public class MatchScreen extends Screen {
   
-  private static final int BOARD_XOFFSET = 300;
+  private static final int BOARD_XOFFSET = 270;
   private static final int BOARD_YOFFSET = 30;
-  private static final int BOARD_WIDTH = 400;
-  private static final int BOARD_HEIGHT = 200;
+  private static final int BOARD_WIDTH = Board.getFullTileSize() * 14;
+  private static final int BOARD_HEIGHT = Board.getFullTileSize() * 11;
 
   private Unit testPlayer;
   private Board board;
   private Cursor cursor;
+  
+  // TODO: temporary control
+  private boolean controlCursor;
   
   MatchScreen(ScreenType type) { // TODO: load in level config 
     super(type);
@@ -68,10 +71,16 @@ public class MatchScreen extends Screen {
     case DOWN:
       yd = 1;
       break;
+    case SPACE:
+      controlCursor = !controlCursor;
+      break;
     }
     
-    cursor.move(xd, yd);
-    //testPlayer.move(xd, yd);
+    if (controlCursor) {
+      cursor.move(xd, yd);
+    } else {
+      testPlayer.move(xd, yd);
+    }
   }
 
 }

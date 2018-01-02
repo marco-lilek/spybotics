@@ -89,6 +89,9 @@ public class Unit extends Entity {
     System.out.println(tail);
     int xn = x + xd;
     int yn = y + yd;
+    if (!board.isInBounds(xn, yn) || (xn == x && yn == y)) {
+      return;
+    }
     
     tail.put(new IPoint(x,y), true);
     if (tail.size() > unitConfig.getMaxTailLength()) {
@@ -99,7 +102,6 @@ public class Unit extends Entity {
     
     x = xn;
     y = yn;
-    
   }
 
 }
