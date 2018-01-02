@@ -14,40 +14,31 @@ import util.Direction;
 import util.IPoint;
 
 public class Board extends Entity {
-  private static final int WIDTH_TILES = 4;//16;
-  private static final int HEIGHT_TILES = 4;//14;
-  private static final int XOFFSET = 300;
-  private static final int YOFFSET = 30;
   private static final int TILEW = 32;
   private static final int TILESPACE = 4;
-  private static final int XPADDING = 30;
-  private static final int YPADDING = 30;
-  
-  public static int getBoardScreenWidth() {
-    return offsetTilex(WIDTH_TILES) + XPADDING;
-  }
-  
-  public static int getBoardScreenHeight() {
-    return offsetTiley(HEIGHT_TILES) + YPADDING;
-  }
-  
+
+  private Canvas drawCanvas;
+  private BoardConfig boardConfig;
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   
-  public Board(BoardConfig boardConfig) {
-    // TODO: width and height here specifies the dim on the screen, but the actual board could be larger than the screen
-    this.floorTiles = boardConfig.getFloorTiles(); //new boolean[WIDTH_TILES][HEIGHT_TILES]; 
+  public Board(Canvas canvas, BoardConfig boardConfig) {
+    this.drawCanvas = canvas;
+    this.boardConfig = boardConfig;
+    this.floorTiles = boardConfig.getFloorTiles();
     
     //floorTiles[3][4] = true;
     
-    unitAtTiles = new Unit[WIDTH_TILES][HEIGHT_TILES];
+    unitAtTiles = new Unit[boardConfig.board_width][boardConfig.board_height];
   }
 
   @Override
   public void redraw(Graphics g) {
-    g.drawRect(XOFFSET, YOFFSET, offsetTilex(WIDTH_TILES - 1) - XOFFSET, offsetTiley(HEIGHT_TILES - 1) - YOFFSET);
-    for (int i = 0; i < WIDTH_TILES; i++) {
-      for (int j = 0; j < HEIGHT_TILES; j++) {
+    IPoint topLeft = drawCanvas.topLeft;
+    IPoint dimensions = drawCanvas.dimensions;
+    g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    for (int i = 0; i < boardConfig.board_width; i++) {
+      for (int j = 0; j < boardConfig.board_height; j++) {
         if (floorTiles[i][j]) {
           g.drawRect(offsetTilex(i), offsetTiley(j), TILEW, TILEW);
         }
@@ -77,11 +68,11 @@ public class Board extends Entity {
     this.unitAtTiles[x][y] = u;
   }
   
-  private static int offsetTilex(int x) {
-    return XOFFSET + x * (TILEW + TILESPACE);
+  private int offsetTilex(int x) {
+    return drawCanvas.topLeft.gx() + x * (TILEW + TILESPACE);
   }
   
-  private static int offsetTiley(int y) {
-    return YOFFSET + y * (TILEW + TILESPACE);
+  private int offsetTiley(int y) {
+    return drawCanvas.topLeft.gy() + y * (TILEW + TILESPACE);
   }
 }

@@ -20,10 +20,10 @@ import screen.Screen;
 import screen.ScreenFactory;
 import screen.ScreenType;
 import util.CallbackListener;
+import util.IPoint;
 
 public class Game implements CallbackListener<Key> {
 
-  private KeyboardManager keyboardManager;
   private Map<String, String> globalGameConfig;
   private Screen activeScreen;
   
@@ -32,24 +32,8 @@ public class Game implements CallbackListener<Key> {
     globalGameConfig = new HashMap<String, String>();
     activeScreen = ScreenFactory.getScreen(ScreenType.TEST_SCREEN, globalGameConfig);
   }
-  
-  private static final int SCREEN_WIDTH = Board.getBoardScreenWidth();
-  private static final int SCREEN_HEIGHT = Board.getBoardScreenHeight();
-
-  public static Dimension getDimensions() {
-    return new Dimension(getScreenWidth(), getScreenHeight());
-  }
-
-  public static int getScreenWidth() {
-    return SCREEN_WIDTH;
-  }
-
-  public static int getScreenHeight() {
-    return SCREEN_HEIGHT;
-  }
 
   public void redraw(Graphics g) {
-    g.clearRect(0, 0, getScreenWidth(), getScreenHeight());
     activeScreen.redraw(g);
   }
   

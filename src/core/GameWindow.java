@@ -24,8 +24,13 @@ import javax.swing.Timer;
 import com.google.gson.Gson;
 
 import core.keyboard.KeyboardManager;
+import entity.Board;
+import util.IPoint;
 
-public class GameWindowPanel extends JPanel implements ActionListener {  
+public class GameWindow extends JPanel implements ActionListener {
+  
+  private static final int SCREEN_WIDTH = 1600;
+  private static final int SCREEN_HEIGHT = 700;
   
   private Game game;
   private KeyboardManager keyboardManager;
@@ -34,25 +39,30 @@ public class GameWindowPanel extends JPanel implements ActionListener {
   
   @Override
   public Dimension getPreferredSize() {
-    return Game.getDimensions();
+    return new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT);
   }
   
   @Override
   protected void paintComponent(Graphics g) {
-    if (game != null && bufferGraphics != null) {
+    if (bufferGraphics != null) {
+      bufferGraphics.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
       game.redraw(bufferGraphics);
+      
       g.drawImage(offscreen, 0, 0, this);
       Toolkit.getDefaultToolkit().sync();
     }
   }
   
-  public void init() {
-    // Initialize image
-    offscreen = createImage(Game.getScreenWidth(), Game.getScreenHeight());
-    bufferGraphics = offscreen.getGraphics(); 
-    
+  GameWindow() {
+    super();
     keyboardManager = new KeyboardManager(this.getInputMap(), this.getActionMap());
     game = new Game(keyboardManager);
+  }
+  
+  public void init() {
+    // Initialize image
+    offscreen = createImage(SCREEN_WIDTH, SCREEN_HEIGHT);
+    bufferGraphics = offscreen.getGraphics(); 
     
     // Tick, 60fps
     Timer tickTimer = new Timer(20, this);
@@ -64,7 +74,7 @@ public class GameWindowPanel extends JPanel implements ActionListener {
     System.out.println(System.getProperty("user.dir"));
     
     JFrame frame = new JFrame();
-    GameWindowPanel gameWindowPanel = new GameWindowPanel();
+    GameWindow gameWindowPanel = new GameWindow();
     frame.getContentPane().add(gameWindowPanel);
     frame.pack();
     frame.setVisible(true);
