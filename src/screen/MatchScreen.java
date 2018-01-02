@@ -18,13 +18,19 @@ import util.JSONLoader;
 
 public class MatchScreen extends Screen {
   
+  private enum MatchState {
+    LOADING,  // Players are selecting their units
+    RUNNING   // Match has begun 
+  }
+  
   private static final int BOARD_XOFFSET = 270;
   private static final int BOARD_YOFFSET = 30;
   private static final int BOARD_WIDTH = Board.getFullTileSize() * 14;
   private static final int BOARD_HEIGHT = Board.getFullTileSize() * 11;
 
   private Board board;
-  private Player player;
+  private Player[] players;
+  private int activePlayerIdx;
   
   // TODO: temporary control
   private boolean controlCursor;
@@ -33,7 +39,8 @@ public class MatchScreen extends Screen {
     super(type);
     
     board = new Board(getBoardCanvas(), JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    player = new Player(board);
+    players = new Player[] {new Player(board), new Player(board)};
+    activePlayerIdx = 0;
   }
 
   private Canvas getBoardCanvas() {
@@ -42,20 +49,26 @@ public class MatchScreen extends Screen {
 
   @Override
   public ScreenType tick() {
-    player.tick();
+    for (Player p : players) {
+      p.tick();
+    }
     return this.getType();
   }
 
   @Override
   public void redraw(Graphics g) {
     board.redraw(g);
-    player.redraw(g);
+    for (Player p : players) {
+      p.redraw(g);
+    }
     SpriteManager.getManager().drawSheet(g);
   }
 
   @Override
   public void handleKeyStroke(Key key) {
-    player.handleKeyStroke(key);
+    if (players[activePlayerIdx].handleKeyStroke(key)) { // Player signals their turn has completed
+      activePlayerIdx = (activePlayerIdx + 1) % players.length;
+    }
   }
 
 }

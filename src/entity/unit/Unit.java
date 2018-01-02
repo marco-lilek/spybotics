@@ -19,18 +19,21 @@ import util.IPoint;
 
 public class Unit extends Entity {
 
-  private Board board;
+  private final Board board;
+  private final UnitConfig unitConfig;
+  private final Color playerColor;
+  
   private int x,y;
   private Set<IPoint> reachableTiles;
   private int availMoves = 0;
   
   private Map<IPoint,Boolean> tail;
-  private UnitConfig unitConfig;
   
-  public Unit(int x, int y, Board board, UnitConfig unitConfig) {
+  public Unit(int x, int y, Board board, UnitConfig unitConfig, Color playerColor) {
     this.x = x;
     this.y = y;
     this.unitConfig = unitConfig;
+    this.playerColor = playerColor;
     
     tail = new LinkedHashMap<IPoint,Boolean>();
     reachableTiles = new TreeSet<IPoint>();
@@ -60,9 +63,12 @@ public class Unit extends Entity {
     for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
       IPoint p = it.next();
       Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
-      g.setColor(new Color(12,12,12));
-      g.fillRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
-      g.setColor(new Color(0,0,0));
+      if (drawCanvas != null) {
+        g.setColor(new Color(12,12,12));
+        g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+        g.setColor(new Color(0,0,0));        
+      }
+      
     }
   }
 
@@ -76,6 +82,8 @@ public class Unit extends Entity {
     g.fillRect(shadowOffset.gx() + topLeft.gx(), shadowOffset.gy() + topLeft.gy(), dimensions.gx(), dimensions.gy());
     g.setColor(unitConfig.getRGB());
     g.fillRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    g.setColor(playerColor);
+    g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
     g.setColor(new Color(0,0,0));
   }
   
@@ -116,16 +124,12 @@ public class Unit extends Entity {
     setReachableTiles(availMoves);
   }
   
-  
-  
   public void move(int xd, int yd) {
     int xn = x + xd;
     int yn = y + yd;
     if (!board.open(xn, yn) || (xn == x && yn == y) || reachableTiles.size() <= 1) {
       return;
     }
-    
-    setReachableTiles(--availMoves);
     
     tail.put(new IPoint(x,y), true);
     if (tail.size() > unitConfig.max_tail_length) {
@@ -136,6 +140,8 @@ public class Unit extends Entity {
     
     x = xn;
     y = yn;
+    
+    setReachableTiles(--availMoves);
   }
 
 }

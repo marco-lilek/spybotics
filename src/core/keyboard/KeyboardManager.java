@@ -37,7 +37,9 @@ public class KeyboardManager extends CallbackNotifier<Key> {
     keyStrokeKeyCodeMap.put("RIGHT", Key.RIGHT);
     keyStrokeKeyCodeMap.put("UP", Key.UP);
     keyStrokeKeyCodeMap.put("DOWN", Key.DOWN);
+    keyStrokeKeyCodeMap.put("typed e", Key.E);
   }
+  
   
   public KeyboardManager(InputMap inputMap, ActionMap actionMap) {
     for (Iterator<Map.Entry<String, Key>> entryIter = keyStrokeKeyCodeMap.entrySet().iterator(); entryIter.hasNext();) {

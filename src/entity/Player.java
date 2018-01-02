@@ -1,6 +1,8 @@
 package entity;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.util.concurrent.ThreadLocalRandom;
 
 import config.UnitConfig;
 import core.keyboard.Key;
@@ -11,14 +13,16 @@ public class Player extends Entity {
   private Cursor cursor;
   private Unit unit;
   private boolean controlCursor;
+  private final Color color;
   
   public Player(Board board) {
+    color = new Color(ThreadLocalRandom.current().nextInt(0, 256), ThreadLocalRandom.current().nextInt(0, 256),ThreadLocalRandom.current().nextInt(0, 256));
     controlCursor = true;
     cursor = new Cursor(board);
-    unit = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class));
+    unit = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class), color);
   }
 
-  public void handleKeyStroke(Key key) {
+  public boolean handleKeyStroke(Key key) {
     int xd=0,yd=0;
     switch (key) {
     case LEFT:
@@ -35,15 +39,19 @@ public class Player extends Entity {
       break;
     case SPACE:
       controlCursor = !controlCursor;
-      unit.resetReachableTiles();
+      if (!controlCursor) {
+        unit.resetReachableTiles();
+      }
       break;
+    case E:
+      return true;
     }
-    
     if (controlCursor) {
       cursor.move(xd, yd);
     } else {
       unit.move(xd, yd);
     }
+    return false;
   }
 
   @Override
