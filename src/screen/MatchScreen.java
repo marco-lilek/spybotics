@@ -9,6 +9,7 @@ import config.UnitConfig;
 import core.keyboard.Key;
 import core.sprite.SpriteManager;
 import entity.Board;
+import entity.Cursor;
 import entity.unit.Unit;
 import util.Canvas;
 import util.IPoint;
@@ -19,14 +20,17 @@ public class MatchScreen extends Screen {
   private static final int BOARD_XOFFSET = 300;
   private static final int BOARD_YOFFSET = 30;
   private static final int BOARD_WIDTH = 400;
-  private static final int BOARD_HEIGHT = 400;
+  private static final int BOARD_HEIGHT = 200;
 
   private Unit testPlayer;
   private Board board;
+  private Cursor cursor;
   
   MatchScreen(ScreenType type) { // TODO: load in level config 
     super(type);
+    
     board = new Board(getBoardCanvas(), JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
+    cursor = new Cursor(board);
     testPlayer = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class));
   }
 
@@ -44,26 +48,30 @@ public class MatchScreen extends Screen {
   public void redraw(Graphics g) {
     board.redraw(g);
     testPlayer.redraw(g);
-
+    cursor.redraw(g);
     SpriteManager.getManager().drawSheet(g);
   }
 
   @Override
   public void handleKeyStroke(Key key) {
+    int xd=0,yd=0;
     switch (key) {
     case LEFT:
-        testPlayer.move(-1, 0);
-        break;
+      xd = -1;
+      break;
     case RIGHT:
-      testPlayer.move(1, 0);
+      xd = 1;
       break;
     case UP:
-      testPlayer.move(0, -1);
+      yd = -1;
       break;
     case DOWN:
-      testPlayer.move(0, 1);
+      yd = 1;
       break;
     }
+    
+    cursor.move(xd, yd);
+    //testPlayer.move(xd, yd);
   }
 
 }

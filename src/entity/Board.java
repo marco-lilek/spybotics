@@ -21,14 +21,20 @@ public class Board extends Entity {
   private BoardConfig boardConfig;
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
+  private int canvasWidthTiles, canvasHeightTiles;
+  private int topLeftx, topLefty;
   
   public Board(Canvas canvas, BoardConfig boardConfig) {
     this.drawCanvas = canvas;
+    
+    IPoint boardDimensions = canvas.dimensions;
+    canvasWidthTiles = boardDimensions.gx() / (TILEW + TILESPACE);
+    canvasHeightTiles = boardDimensions.gy() / (TILEW + TILESPACE);
+    topLeftx = 0;
+    topLefty = 0;
+    
     this.boardConfig = boardConfig;
     this.floorTiles = boardConfig.getFloorTiles();
-    
-    //floorTiles[3][4] = true;
-    
     unitAtTiles = new Unit[boardConfig.board_width][boardConfig.board_height];
   }
 
@@ -40,7 +46,12 @@ public class Board extends Entity {
     for (int i = 0; i < boardConfig.board_width; i++) {
       for (int j = 0; j < boardConfig.board_height; j++) {
         if (floorTiles[i][j]) {
-          g.drawRect(offsetTilex(i), offsetTiley(j), TILEW, TILEW);
+          Canvas floorTileCanvas = getTileDrawCanvas(i, j);
+          if (floorTileCanvas != null) {
+            IPoint ftTopLeft = floorTileCanvas.topLeft;
+            IPoint ftDimensions = floorTileCanvas.dimensions;
+            g.drawRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
+          }
         }
       }
     }
@@ -53,6 +64,9 @@ public class Board extends Entity {
   }
   
   public Canvas getTileDrawCanvas(int x, int y) {
+    if (x < topLeftx || y < topLefty  || x >= topLeftx + canvasWidthTiles || y >= topLefty + canvasHeightTiles) {
+      return null; // don't draw
+    }
     int adjX = offsetTilex(x);
     int adjY = offsetTiley(y);
     IPoint topLeft = new IPoint(adjX, adjY);
@@ -64,15 +78,43 @@ public class Board extends Entity {
     return new IPoint(TILESPACE / 2, TILESPACE / 2);
   }
   
+  public boolean isInBounds(int x, int y) {
+    if (x < 0 || x >= boardConfig.board_width || y < 0 || y >= boardConfig.board_height) {
+      return false;
+    }
+    return true;
+  }
+  
   public void addUnitAt(int x, int y, Unit u) {
     this.unitAtTiles[x][y] = u;
   }
   
   private int offsetTilex(int x) {
-    return drawCanvas.topLeft.gx() + x * (TILEW + TILESPACE);
+    return drawCanvas.topLeft.gx() + (x - topLeftx) * (TILEW + TILESPACE);
   }
   
   private int offsetTiley(int y) {
-    return drawCanvas.topLeft.gy() + y * (TILEW + TILESPACE);
+    return drawCanvas.topLeft.gy() + (y - topLefty) * (TILEW + TILESPACE);
+  }
+
+  public Canvas getTilesCanvas() {
+    return new Canvas(new IPoint(topLeftx, topLefty), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
+  }
+
+  public void shiftCanvas(Direction direction) {
+    switch (direction) {
+    case NORTH:
+      topLefty--;
+      break;
+    case SOUTH:
+      topLefty++;
+      break;
+    case EAST:
+      topLeftx++;
+      break;
+    case WEST:
+      topLeftx--;
+      break;
+    }
   }
 }

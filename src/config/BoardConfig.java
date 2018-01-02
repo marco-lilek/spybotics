@@ -33,8 +33,6 @@ public class BoardConfig {
         }
         break;
       }
-      
-      
     }
     
     return floorTiles;

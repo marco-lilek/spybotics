@@ -40,11 +40,18 @@ public class Unit extends Entity {
       IPoint p = it.next();
       int px = p.gx();
       int py = p.gy();
-      drawTailTile(g, board.getTileDrawCanvas(px, py), idx + 1);
+      Canvas drawCanvas = board.getTileDrawCanvas(px, py);
+      if (drawCanvas != null) {
+        drawTailTile(g, drawCanvas, idx + 1);
+      }
+      
     }
     
-    drawHeadTile(g, board.getTileDrawCanvas(x, y));
-    //board.drawHeadTile(g, x, y);
+    Canvas drawCanvas = board.getTileDrawCanvas(x, y);
+    if (drawCanvas != null) {
+      drawHeadTile(g, board.getTileDrawCanvas(x, y));
+    }
+    
   }
 
 

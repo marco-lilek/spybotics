@@ -8,4 +8,8 @@ public class Canvas {
     this.topLeft = topLeft;
     this.dimensions = dimensions;
   }
+
+  public IPoint getBottomRight() {
+    return new IPoint(topLeft.gx() + dimensions.gx(), topLeft.gy() + dimensions.gy());
+  }
 }
