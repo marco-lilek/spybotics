@@ -5,7 +5,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
 
 import config.BoardConfig;
 import entity.unit.Unit;
@@ -85,6 +87,10 @@ public class Board extends Entity {
     return true;
   }
   
+  public boolean open(int x, int y) {
+    return isInBounds(x, y) && floorTiles[x][y];
+  }
+  
   public void addUnitAt(int x, int y, Unit u) {
     this.unitAtTiles[x][y] = u;
   }
@@ -120,5 +126,18 @@ public class Board extends Entity {
 
   public static int getFullTileSize() {
     return TILEW + TILESPACE;
+  }
+  
+  public Set<IPoint> getAdjacentTiles(IPoint tile) {
+    Set<IPoint>toRet = new TreeSet<IPoint>();
+    int tx = tile.gx(), ty = tile.gy();
+    int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
+    for (int[] move : moves) {
+      int xn = tx + move[0], yn = ty + move[1];
+      if (open(xn, yn)) {
+        toRet.add(new IPoint(xn, yn));
+      }
+    }
+    return toRet;
   }
 }

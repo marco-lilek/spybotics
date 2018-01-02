@@ -10,6 +10,7 @@ import core.keyboard.Key;
 import core.sprite.SpriteManager;
 import entity.Board;
 import entity.Cursor;
+import entity.Player;
 import entity.unit.Unit;
 import util.Canvas;
 import util.IPoint;
@@ -22,9 +23,8 @@ public class MatchScreen extends Screen {
   private static final int BOARD_WIDTH = Board.getFullTileSize() * 14;
   private static final int BOARD_HEIGHT = Board.getFullTileSize() * 11;
 
-  private Unit testPlayer;
   private Board board;
-  private Cursor cursor;
+  private Player player;
   
   // TODO: temporary control
   private boolean controlCursor;
@@ -33,8 +33,7 @@ public class MatchScreen extends Screen {
     super(type);
     
     board = new Board(getBoardCanvas(), JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    cursor = new Cursor(board);
-    testPlayer = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class));
+    player = new Player(board);
   }
 
   private Canvas getBoardCanvas() {
@@ -43,44 +42,20 @@ public class MatchScreen extends Screen {
 
   @Override
   public ScreenType tick() {
-    testPlayer.tick();
+    player.tick();
     return this.getType();
   }
 
   @Override
   public void redraw(Graphics g) {
     board.redraw(g);
-    testPlayer.redraw(g);
-    cursor.redraw(g);
+    player.redraw(g);
     SpriteManager.getManager().drawSheet(g);
   }
 
   @Override
   public void handleKeyStroke(Key key) {
-    int xd=0,yd=0;
-    switch (key) {
-    case LEFT:
-      xd = -1;
-      break;
-    case RIGHT:
-      xd = 1;
-      break;
-    case UP:
-      yd = -1;
-      break;
-    case DOWN:
-      yd = 1;
-      break;
-    case SPACE:
-      controlCursor = !controlCursor;
-      break;
-    }
-    
-    if (controlCursor) {
-      cursor.move(xd, yd);
-    } else {
-      testPlayer.move(xd, yd);
-    }
+    player.handleKeyStroke(key);
   }
 
 }

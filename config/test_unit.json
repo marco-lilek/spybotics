@@ -1,5 +1,6 @@
 {
   "name": "test unit",
   "color_rgb_hex": "a89d02",
-  "max_tail_length": 7
+  "max_tail_length": 7,
+  "movement_speed": 5
 }

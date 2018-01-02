@@ -3,10 +3,12 @@ package entity.unit;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import config.UnitConfig;
 import entity.Board;
@@ -19,6 +21,9 @@ public class Unit extends Entity {
 
   private Board board;
   private int x,y;
+  private Set<IPoint> reachableTiles;
+  private int availMoves = 0;
+  
   private Map<IPoint,Boolean> tail;
   private UnitConfig unitConfig;
   
@@ -28,6 +33,7 @@ public class Unit extends Entity {
     this.unitConfig = unitConfig;
     
     tail = new LinkedHashMap<IPoint,Boolean>();
+    reachableTiles = new TreeSet<IPoint>();
     
     this.board = board;
     this.board.addUnitAt(this.x, this.y, this);
@@ -44,14 +50,20 @@ public class Unit extends Entity {
       if (drawCanvas != null) {
         drawTailTile(g, drawCanvas, idx + 1);
       }
-      
     }
     
-    Canvas drawCanvas = board.getTileDrawCanvas(x, y);
-    if (drawCanvas != null) {
+    Canvas headDrawCanvas = board.getTileDrawCanvas(x, y);
+    if (headDrawCanvas != null) {
       drawHeadTile(g, board.getTileDrawCanvas(x, y));
     }
     
+    for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
+      IPoint p = it.next();
+      Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
+      g.setColor(new Color(12,12,12));
+      g.fillRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
+      g.setColor(new Color(0,0,0));
+    }
   }
 
 
@@ -85,16 +97,38 @@ public class Unit extends Entity {
     
   }
   
+  private void setReachableTiles(int availMoves) {
+    reachableTiles.clear();
+    reachableTiles.add(new IPoint(x, y));
+    for (int i = 0; i < availMoves; i++) {
+      Set<IPoint> newEntries = new TreeSet<IPoint>();
+      for (Iterator<IPoint> rti = reachableTiles.iterator(); rti.hasNext();) {
+        IPoint reachableTile = rti.next();
+        newEntries.addAll(board.getAdjacentTiles(reachableTile));
+      }
+      reachableTiles.addAll(newEntries);
+    }
+    System.out.println(reachableTiles);
+  }
+  
+  public void resetReachableTiles() {
+    availMoves = unitConfig.movement_speed;
+    setReachableTiles(availMoves);
+  }
+  
+  
+  
   public void move(int xd, int yd) {
-    System.out.println(tail);
     int xn = x + xd;
     int yn = y + yd;
-    if (!board.isInBounds(xn, yn) || (xn == x && yn == y)) {
+    if (!board.open(xn, yn) || (xn == x && yn == y) || reachableTiles.size() <= 1) {
       return;
     }
     
+    setReachableTiles(--availMoves);
+    
     tail.put(new IPoint(x,y), true);
-    if (tail.size() > unitConfig.getMaxTailLength()) {
+    if (tail.size() > unitConfig.max_tail_length) {
       IPoint top = tail.keySet().iterator().next();
       tail.remove(top);
     }

@@ -1,6 +1,6 @@
 package util;
 
-public class IPoint {
+public class IPoint implements Comparable {
   
   @Override
   public int hashCode() {
@@ -13,18 +13,7 @@ public class IPoint {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    IPoint other = (IPoint) obj;
-    if (x != other.x)
-      return false;
-    if (y != other.y)
-      return false;
-    return true;
+    return compareTo(obj) == 0;
   }
 
   private int x,y;
@@ -40,5 +29,21 @@ public class IPoint {
   public int gy() {
     return y;
   }
+
+  @Override
+  public int compareTo(Object obj) {
+    if (this == obj)
+      return 0;
+    if (obj == null)
+      return 0;
+    if (getClass() != obj.getClass())
+      return 0;
+    IPoint other = (IPoint) obj;
+    return hashCode() - obj.hashCode(); 
+  }
   
+  @Override
+  public String toString() {
+    return "(" + String.valueOf(x) + "," + String.valueOf(y) + ")";
+  }
 }
