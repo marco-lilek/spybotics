@@ -5,7 +5,9 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 
-public abstract class Entity implements Comparable {
+import util.CallbackNotifier;
+
+public abstract class Entity extends CallbackNotifier<Boolean> implements Comparable {
 
   public abstract void redraw(Graphics g);
   public abstract void tick();

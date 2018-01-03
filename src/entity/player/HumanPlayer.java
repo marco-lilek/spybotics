@@ -1,28 +1,25 @@
-package entity;
+package entity.player;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.ThreadLocalRandom;
 
-import config.UnitConfig;
 import core.keyboard.Key;
-import entity.unit.Unit;
-import util.JSONLoader;
+import entity.Board;
+import entity.Cursor;
+import screen.MatchScreen;
+import screen.Screen;
 
-public class Player extends Entity {
-  private Cursor cursor;
-  private Unit unit;
+public class HumanPlayer extends Player {
+
   private boolean controlCursor;
-  private final Color color;
+  private final Cursor cursor;
   
-  public Player(Board board) {
-    color = new Color(ThreadLocalRandom.current().nextInt(0, 256), ThreadLocalRandom.current().nextInt(0, 256),ThreadLocalRandom.current().nextInt(0, 256));
+  public HumanPlayer(Board board, Screen screen) {
+    super(board, screen);
     controlCursor = true;
     cursor = new Cursor(board);
-    unit = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class), color);
   }
 
-  public boolean handleKeyStroke(Key key) {
+  public void handleKeyStroke(Key key) {
     int xd=0,yd=0;
     switch (key) {
     case LEFT:
@@ -44,24 +41,29 @@ public class Player extends Entity {
       }
       break;
     case E:
-      return true;
+      finishTurn();
     }
     if (controlCursor) {
       cursor.move(xd, yd);
     } else {
       unit.move(xd, yd);
     }
-    return false;
   }
 
   @Override
   public void redraw(Graphics g) {
+    super.redraw(g);
     cursor.redraw(g);
-    unit.redraw(g);
   }
 
   @Override
   public void tick() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void startTurn() {
     // TODO Auto-generated method stub
     
   }

@@ -10,7 +10,9 @@ import core.keyboard.Key;
 import core.sprite.SpriteManager;
 import entity.Board;
 import entity.Cursor;
-import entity.Player;
+import entity.player.AIPlayer;
+import entity.player.HumanPlayer;
+import entity.player.Player;
 import entity.unit.Unit;
 import util.Canvas;
 import util.IPoint;
@@ -39,7 +41,7 @@ public class MatchScreen extends Screen {
     super(type);
     
     board = new Board(getBoardCanvas(), JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    players = new Player[] {new Player(board), new Player(board)};
+    players = new Player[] {new HumanPlayer(board, this), new AIPlayer(board, this)};
     activePlayerIdx = 0;
   }
 
@@ -66,9 +68,12 @@ public class MatchScreen extends Screen {
 
   @Override
   public void handleKeyStroke(Key key) {
-    if (players[activePlayerIdx].handleKeyStroke(key)) { // Player signals their turn has completed
-      activePlayerIdx = (activePlayerIdx + 1) % players.length;
-    }
+    players[activePlayerIdx].handleKeyStroke(key);
   }
 
+  @Override
+  public void callback(Boolean msg) {
+    activePlayerIdx = (activePlayerIdx + 1) % players.length;
+    players[activePlayerIdx].startTurn();
+  }
 }

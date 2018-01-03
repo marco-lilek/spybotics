@@ -7,8 +7,9 @@ import java.util.TreeSet;
 
 import core.keyboard.Key;
 import entity.Entity;
+import util.CallbackListener;
 
-public abstract class Screen {
+public abstract class Screen implements CallbackListener<Boolean> {
   
   private ScreenType type;
   
@@ -24,4 +25,10 @@ public abstract class Screen {
   }
 
   public abstract void handleKeyStroke(Key msgFromKeyboard);
+  
+  @Override
+  public void callback(Boolean msg) {
+    // TODO Auto-generated method stub
+    
+  }
 }
