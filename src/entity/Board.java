@@ -140,4 +140,19 @@ public class Board extends Entity {
     }
     return toRet;
   }
+
+  public void addUnitToTile(int x, int y, Unit unit) {
+    unitAtTiles[x][y] = unit;
+  }
+  
+  public void removeUnitFromTile(int x, int y) {
+    unitAtTiles[x][y] = null;
+  }
+  
+  public void attack(int xt, int yt) {
+    if (!isInBounds(xt, yt)) return;
+    if (unitAtTiles[xt][yt] == null) return;
+    
+    unitAtTiles[xt][yt].damage(3);
+  }
 }

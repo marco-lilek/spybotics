@@ -34,14 +34,11 @@ public class MatchScreen extends Screen {
   private Player[] players;
   private int activePlayerIdx;
   
-  // TODO: temporary control
-  private boolean controlCursor;
-  
   MatchScreen(ScreenType type) { // TODO: load in level config 
     super(type);
     
     board = new Board(getBoardCanvas(), JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    players = new Player[] {new HumanPlayer(board, this), new AIPlayer(board, this)};
+    players = new Player[] {new HumanPlayer(board, this), new HumanPlayer(board, this)};
     activePlayerIdx = 0;
   }
 

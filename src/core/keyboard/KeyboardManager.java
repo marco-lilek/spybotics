@@ -38,6 +38,7 @@ public class KeyboardManager extends CallbackNotifier<Key> {
     keyStrokeKeyCodeMap.put("UP", Key.UP);
     keyStrokeKeyCodeMap.put("DOWN", Key.DOWN);
     keyStrokeKeyCodeMap.put("typed e", Key.E);
+    keyStrokeKeyCodeMap.put("typed a", Key.A);
   }
   
   

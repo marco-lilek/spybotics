@@ -6,5 +6,5 @@ public enum Key {
   UP, 
   DOWN, 
   SPACE,
-  E
+  E, A
 };

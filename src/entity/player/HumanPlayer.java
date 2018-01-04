@@ -42,11 +42,20 @@ public class HumanPlayer extends Player {
       break;
     case E:
       finishTurn();
+      break;
+    case A:
+      unit.setAtacking();
+      return;
     }
+    
     if (controlCursor) {
       cursor.move(xd, yd);
     } else {
-      unit.move(xd, yd);
+      if (unit.isAttacking()) {
+        unit.attack(xd, yd);
+      } else {
+        unit.move(xd, yd);
+      }
     }
   }
 

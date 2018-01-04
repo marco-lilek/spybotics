@@ -26,6 +26,7 @@ public class Unit extends Entity {
   private int x,y;
   private Set<IPoint> reachableTiles;
   private int availMoves = 0;
+  private boolean isAttacking;
   
   private Map<IPoint,Boolean> tail;
   
@@ -37,6 +38,7 @@ public class Unit extends Entity {
     
     tail = new LinkedHashMap<IPoint,Boolean>();
     reachableTiles = new TreeSet<IPoint>();
+    isAttacking = false;
     
     this.board = board;
     this.board.addUnitAt(this.x, this.y, this);
@@ -47,9 +49,7 @@ public class Unit extends Entity {
     int idx = 0;
     for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext(); idx++) {
       IPoint p = it.next();
-      int px = p.gx();
-      int py = p.gy();
-      Canvas drawCanvas = board.getTileDrawCanvas(px, py);
+      Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
       if (drawCanvas != null) {
         drawTailTile(g, drawCanvas, idx + 1);
       }
@@ -66,10 +66,23 @@ public class Unit extends Entity {
       if (drawCanvas != null) {
         g.setColor(new Color(12,12,12));
         g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-        g.setColor(new Color(0,0,0));        
+        g.setColor(new Color(0,0,0));
       }
-      
     }
+    
+    if (isAttacking()) {
+      
+      for (Iterator<IPoint> it = board.getAdjacentTiles(new IPoint(x, y)).iterator(); it.hasNext();) {
+        IPoint p = it.next();
+        Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
+        if (drawCanvas != null) {
+          g.setColor(new Color(255,12,12));
+          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+          g.setColor(new Color(0,0,0));
+        }
+      }
+    }
+    
   }
 
 
@@ -124,6 +137,24 @@ public class Unit extends Entity {
     setReachableTiles(availMoves);
   }
   
+  private void popTail() {
+    if (tail.isEmpty()) { // TODO: ovi not sufficient
+      return;
+    }
+    IPoint backOfTail = tail.keySet().iterator().next();
+    removeTail(backOfTail.gx(), backOfTail.gy());
+  }
+  
+  private void removeTail(int x, int y) {
+    tail.remove(new IPoint(x, y));
+    board.removeUnitFromTile(x, y);
+  }
+  
+  private void addTail(int x, int y) {
+    tail.put(new IPoint(x, y), true);
+    board.addUnitAt(x, y, this); // TODO: bad naming
+  }
+  
   public void move(int xd, int yd) {
     int xn = x + xd;
     int yn = y + yd;
@@ -131,17 +162,40 @@ public class Unit extends Entity {
       return;
     }
     
-    tail.put(new IPoint(x,y), true);
+    addTail(x, y);
     if (tail.size() > unitConfig.max_tail_length) {
-      IPoint top = tail.keySet().iterator().next();
-      tail.remove(top);
+      popTail();
     }
     tail.remove(new IPoint(xn, yn));
+    board.addUnitAt(xn, yn, this);
     
     x = xn;
     y = yn;
-    
+    System.out.println(new IPoint(x, y));
     setReachableTiles(--availMoves);
+  }
+
+  public void setAtacking() {
+    isAttacking = true;
+    setReachableTiles(0);
+  }
+
+  public boolean isAttacking() {
+    return isAttacking;
+  }
+
+  public void attack(int xt, int yt) {
+    // TODO: just temp
+    int xtt = xt + x;
+    int ytt = yt + y;
+    board.attack(xtt, ytt);
+    isAttacking = false;
+  }
+
+  public void damage(int amount) {
+    while (amount-- >= 0) {
+      popTail();
+    }
   }
 
 }
