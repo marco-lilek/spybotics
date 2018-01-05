@@ -18,15 +18,10 @@ import util.IPoint;
 import util.communicator.Message;
 
 public class Board extends Entity<BoardPainter> {
-  private static final int TILEW = 32;
-  private static final int TILESPACE = 4;
 
-  private Canvas drawCanvas;
   private final BoardConfig config;
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
-  private int canvasWidthTiles, canvasHeightTiles;
-  private int topLeftx, topLefty;
   
   public Board(BoardPainter painter, BoardConfig config) {
     super(painter);
@@ -57,6 +52,16 @@ public class Board extends Entity<BoardPainter> {
 
   public boolean hasFloorTileAt(int i, int j) {
     return floorTiles[i][j];
+  }
+
+
+  public boolean isInBounds(int x, int y) {
+    return !(x < 0 || x >=  config.getWidthTiles() || y < 0 || y >= config.getHeightTiles());
+  }
+  
+  @Override
+  public String getName() {
+    return "Board";
   }
   
 /*

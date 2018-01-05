@@ -18,7 +18,7 @@ public abstract class Screen extends Communicator {
   private Set<Entity> entities;
   
   Screen(Game game) {
-    addListener(Game.NAME, game);
+    addListener(game.getName(), game);
     entities = new TreeSet<Entity>();
   }
   
@@ -37,6 +37,4 @@ public abstract class Screen extends Communicator {
   protected Set<Entity> getEntities() {
     return entities;
   }
-  
-  public abstract void handleKeyStroke(Message msgFromKeyboard);
 }

@@ -22,12 +22,11 @@ import util.communicator.Message;
 
 public class Game extends Communicator {
 
-  public static final String NAME = "Game";
   private Map<String, String> globalGameConfig;
   private Screen activeScreen;
   
   Game(KeyboardManager keyboardManager) {
-    keyboardManager.addListener(NAME, this);
+    keyboardManager.addListener(getName(), this);
     globalGameConfig = new HashMap<String, String>();
     activeScreen = ScreenFactory.getScreen(Message.GAME_SCREEN_MATCH, this);
   }
@@ -48,10 +47,15 @@ public class Game extends Communicator {
   @Override
   public void callbackRecv(Message msg) {
     if (msg.is(Message.MsgTypes.KEYBOARD)) {
-      activeScreen.handleKeyStroke(msg);
+      notifyListener(activeScreen.getName(), msg);
     } else if (msg.is(Message.MsgTypes.GAME_SCREEN)) {
       activeScreen = ScreenFactory.getScreen(msg, this);
     }
     System.out.println(activeScreen);
+  }
+  
+  @Override
+  public String getName() {
+    return "Game";
   }
 }

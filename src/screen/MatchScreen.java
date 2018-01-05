@@ -11,6 +11,7 @@ import core.sprite.SpriteManager;
 import entity.Board;
 import entity.BoardPainter;
 import entity.Cursor;
+import entity.CursorPainter;
 import entity.player.AIPlayer;
 import entity.player.HumanPlayer;
 import entity.player.Player;
@@ -28,27 +29,33 @@ public class MatchScreen extends Screen {
   private static final int BOARD_WIDTH = BoardPainter.getFullTileSize() * 14;
   private static final int BOARD_HEIGHT = BoardPainter.getFullTileSize() * 11;
   
+  private final String gameName;
+  private final String cursorName;
+  
   MatchScreen(Game game) {
     super(game);
-    this.getEntities().add(new Board(
-        new BoardPainter(new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT))), 
-        JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class)
-        ));
-  }
-
-  @Override
-  public void callbackRecv(Message msg) {
-    // TODO Auto-generated method stub
+    game.addListener(getName(), this);
+    gameName = game.getName();
+    BoardPainter p = new BoardPainter(new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT)));
+    Board b = new Board(p, JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
+    Cursor c = new Cursor(this, b, new CursorPainter(p));
+    cursorName = c.getName();
+    this.getEntities().add(b);
+    this.getEntities().add(c);
     
   }
 
   @Override
-  public void handleKeyStroke(Message msgFromKeyboard) {
-    if (msgFromKeyboard == Message.KEYBOARD_KEY_SPACE) {
-      notifyListener(Game.NAME, Message.GAME_SCREEN_TEST);
-    }
+  public void callbackRecv(Message msg) {
+    notifyListener(cursorName, msg);
   }
   
+  @Override
+  public String getName() {
+    // TODO Auto-generated method stub
+    return "MatchScreen";
+  }
+
 /*  private enum MatchState {
     LOADING,  // Players are selecting their units
     RUNNING   // Match has begun 

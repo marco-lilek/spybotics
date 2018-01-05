@@ -2,38 +2,27 @@ package entity;
 
 import java.awt.Graphics;
 
-import core.keyboard.Key;
+import core.Game;
 import entity.player.Player;
 import entity.unit.Unit;
+import screen.Screen;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
+import util.communicator.Message;
 
-public class Cursor extends Entity {
+public class Cursor extends Entity<CursorPainter> {
 
   private int x,y;
   private Board board;
-  private Unit activeUnit;
-  private Player player;
-  private Unit unitUnderControl;
   
-  public Cursor(Board board) {
+  public Cursor(Screen screen, Board board, CursorPainter painter) {
+    super(painter);
     this.board = board;
-  }
-  
-  @Override
-  public void redraw(Graphics g) {
-    Canvas drawCanvas = board.getTileDrawCanvas(x, y);
-    if (drawCanvas != null) {
-      g.fillRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
-    }
+    painter.attach(this);
+    screen.addListener(getName(), this);
   }
 
-  @Override
-  public void tick() {
-    
-  }
-  
   public void move(int xd, int yd) {
     int xn = x + xd;
     int yn = y + yd;
@@ -42,17 +31,11 @@ public class Cursor extends Entity {
     }
     x = xn;
     y = yn;
-    Canvas tilesCanvas = board.getTilesCanvas();
-    IPoint topLeft = tilesCanvas.topLeft;
-    IPoint bottomRight = tilesCanvas.getBottomRight();
     
-    if (x < topLeft.gx()) board.shiftCanvas(Direction.WEST);
-    if (x > bottomRight.gx()) board.shiftCanvas(Direction.EAST);
-    if (y < topLeft.gy()) board.shiftCanvas(Direction.NORTH);
-    if (y > bottomRight.gy()) board.shiftCanvas(Direction.SOUTH);
+    this.getPainter().move(xn, yn);
   }
 
-  public void handleKeyStroke(Key key) {
+/*  public void handleKeyStroke(Key key) {
     int xd=0,yd=0;
     switch (key) {
     case LEFT:
@@ -82,5 +65,47 @@ public class Cursor extends Entity {
       unitUnderControl.move(xd, yd);
     }
   }
+*/
+  public int gx() {
+    return x;
+  }
+  
+  public int gy() {
+    return y;
+  }
 
+  @Override
+  public void callbackRecv(Message msg) {
+    int xd=0,yd=0;
+    switch (msg) {
+    case KEYBOARD_KEY_LEFT:
+      xd = -1;
+      break;
+    case KEYBOARD_KEY_RIGHT:
+      xd = 1;
+      break;
+    case KEYBOARD_KEY_UP:
+      yd = -1;
+      break;
+    case KEYBOARD_KEY_DOWN:
+      yd = 1;
+      break;
+    default:
+      break;
+    }
+    
+    move(xd, yd);
+  }
+
+
+  @Override
+  public void tick() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public String getName() {
+    return "Cursor";
+  }
 }

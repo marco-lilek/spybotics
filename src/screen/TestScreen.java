@@ -16,8 +16,12 @@ import util.communicator.Message;
 
 public class TestScreen extends Screen {
   
+  private final String gameName;
+  
   TestScreen(Game game) {
     super(game);
+    gameName = game.getName();
+    game.addListener(getName(), this);
 /*    entities = new TreeSet<Entity>();
     entities.add(new FireworksEmitter(200,200,50, 2, 60, 0, 2, new ParticleDrawer() {
       private int w = 5;
@@ -30,14 +34,14 @@ public class TestScreen extends Screen {
 
   @Override
   public void callbackRecv(Message msg) {
-    // TODO Auto-generated method stub
-    
+    if (msg == Message.KEYBOARD_KEY_SPACE) {
+      notifyListener(gameName, Message.GAME_SCREEN_MATCH);
+    }
   }
 
   @Override
-  public void handleKeyStroke(Message msgFromKeyboard) {
-    if (msgFromKeyboard == Message.KEYBOARD_KEY_SPACE) {
-      notifyListener(Game.NAME, Message.GAME_SCREEN_MATCH);
-    }
+  public String getName() {
+    // TODO Auto-generated method stub
+    return "TestScreen";
   }
 }

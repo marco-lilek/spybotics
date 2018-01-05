@@ -1,18 +1,19 @@
 package entity;
 
 import util.Canvas;
+import util.Direction;
+
 import java.awt.Graphics;
 
 import util.IPoint;
 
-public class BoardPainter extends EntityPainter {
+public class BoardPainter extends EntityPainter<Board> {
   private static final int TILEW = 32;
   private static final int TILESPACE = 4;
   
-  private Board board;
   private final Canvas drawCanvas;
   private int canvasWidthTiles, canvasHeightTiles;
-  private final int topLeftTilex, topLeftTiley;
+  private int topLeftTilex, topLeftTiley;
   
   public BoardPainter(Canvas availCanvasFromScreen) {
     super();
@@ -21,8 +22,9 @@ public class BoardPainter extends EntityPainter {
     topLeftTiley = 0;
   }
   
+  @Override
   public void attach(Board board) {
-    this.board = board;
+    super.attach(board);
     System.out.println(board.getConfig());
     IPoint boardDimensions = drawCanvas.dimensions;
     canvasWidthTiles = Math.min(board.getConfig().getWidthTiles(), boardDimensions.gx() / getFullTileSize());
@@ -39,11 +41,11 @@ public class BoardPainter extends EntityPainter {
     IPoint dimensions = drawCanvas.dimensions;
     g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
     
-    int totalWidthTiles = board.getConfig().getWidthTiles();
-    int totalHeightTiles = board.getConfig().getHeightTiles();
+    int totalWidthTiles = getLogicContainer().getConfig().getWidthTiles();
+    int totalHeightTiles = getLogicContainer().getConfig().getHeightTiles();
     for (int i = 0; i < totalWidthTiles; i++) {
       for (int j = 0; j < totalHeightTiles; j++) {
-        if (board.hasFloorTileAt(i, j)) {
+        if (getLogicContainer().hasFloorTileAt(i, j)) {
           Canvas floorTileCanvas = getTileDrawCanvas(i, j);
           if (floorTileCanvas != null) {
             IPoint ftTopLeft = floorTileCanvas.topLeft;
@@ -72,6 +74,29 @@ public class BoardPainter extends EntityPainter {
   
   private int offsetTiley(int y) {
     return drawCanvas.topLeft.gy() + (y - topLeftTiley) * getFullTileSize();
+  }
+
+  public Canvas getTilesCanvas() {
+    return new Canvas(new IPoint(topLeftTilex, topLeftTiley), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
+  }
+
+  public void shiftCanvas(Direction direction) {
+    switch (direction) {
+    case NORTH:
+      topLeftTiley--;
+      break;
+    case SOUTH:
+      topLeftTiley++;
+      break;
+    case EAST:
+      topLeftTilex++;
+      break;
+    case WEST:
+      topLeftTilex--;
+      break;
+    default:
+      break;
+    }
   }
   
 }
