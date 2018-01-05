@@ -2,33 +2,41 @@ package screen;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import core.keyboard.Key;
+import core.Game;
 import entity.Entity;
-import util.CallbackListener;
+import util.communicator.CallbackListener;
+import util.communicator.CallbackNotifier;
+import util.communicator.Communicator;
+import util.communicator.Message;
 
-public abstract class Screen implements CallbackListener<Boolean> {
+public abstract class Screen extends Communicator {
   
-  private ScreenType type;
+  private Set<Entity> entities;
   
-  Screen(ScreenType type) {
-    this.type = type;
+  Screen(Game game) {
+    addListener(Game.NAME, game);
+    entities = new TreeSet<Entity>();
   }
   
-  public abstract ScreenType tick();
-  public abstract void redraw(Graphics g);
+  public void tick() {
+    for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+      it.next().tick();
+    }
+  }
   
-  public ScreenType getType() {
-    return type;
+  public void redraw(Graphics g) {
+    for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+      it.next().redraw(g);
+    }
   }
 
-  public abstract void handleKeyStroke(Key msgFromKeyboard);
-  
-  @Override
-  public void callback(Boolean msg) {
-    // TODO Auto-generated method stub
-    
+  protected Set<Entity> getEntities() {
+    return entities;
   }
+  
+  public abstract void handleKeyStroke(Message msgFromKeyboard);
 }

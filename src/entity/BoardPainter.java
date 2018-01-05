@@ -1,5 +1,84 @@
 package entity;
 
+import util.Canvas;
+import java.awt.Graphics;
+
+import util.IPoint;
+
+public class BoardPainter extends EntityPainter {
+  private static final int TILEW = 32;
+  private static final int TILESPACE = 4;
+  
+  private Board board;
+  private final Canvas drawCanvas;
+  private int canvasWidthTiles, canvasHeightTiles;
+  private final int topLeftTilex, topLeftTiley;
+  
+  public BoardPainter(Canvas availCanvasFromScreen) {
+    super();
+    this.drawCanvas = availCanvasFromScreen;
+    topLeftTilex = 0;
+    topLeftTiley = 0;
+  }
+  
+  public void attach(Board board) {
+    this.board = board;
+    System.out.println(board.getConfig());
+    IPoint boardDimensions = drawCanvas.dimensions;
+    canvasWidthTiles = Math.min(board.getConfig().getWidthTiles(), boardDimensions.gx() / getFullTileSize());
+    canvasHeightTiles = Math.min(board.getConfig().getHeightTiles(), boardDimensions.gy() / getFullTileSize());
+  }
+  
+  public static int getFullTileSize() {
+    return TILEW + TILESPACE;
+  }
+
+  @Override
+  public void redraw(Graphics g) {
+    IPoint topLeft = drawCanvas.topLeft;
+    IPoint dimensions = drawCanvas.dimensions;
+    g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    
+    int totalWidthTiles = board.getConfig().getWidthTiles();
+    int totalHeightTiles = board.getConfig().getHeightTiles();
+    for (int i = 0; i < totalWidthTiles; i++) {
+      for (int j = 0; j < totalHeightTiles; j++) {
+        if (board.hasFloorTileAt(i, j)) {
+          Canvas floorTileCanvas = getTileDrawCanvas(i, j);
+          if (floorTileCanvas != null) {
+            IPoint ftTopLeft = floorTileCanvas.topLeft;
+            IPoint ftDimensions = floorTileCanvas.dimensions;
+            g.drawRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
+          }
+        }
+      }
+    }
+  }
+  
+  public Canvas getTileDrawCanvas(int x, int y) {
+    if (x < topLeftTilex || y < topLeftTiley  || x >= topLeftTilex + canvasWidthTiles || y >= topLeftTiley + canvasHeightTiles) {
+      return null; // don't draw
+    }
+    int adjX = offsetTilex(x);
+    int adjY = offsetTiley(y);
+    IPoint topLeft = new IPoint(adjX, adjY);
+    IPoint dimensions = new IPoint(TILEW, TILEW);
+    return new Canvas(topLeft, dimensions);
+  }
+  
+  private int offsetTilex(int x) {
+    return drawCanvas.topLeft.gx() + (x - topLeftTilex) * getFullTileSize();
+  }
+  
+  private int offsetTiley(int y) {
+    return drawCanvas.topLeft.gy() + (y - topLeftTiley) * getFullTileSize();
+  }
+  
+}
+
+/*
+package entity;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -17,49 +96,30 @@ import util.Direction;
 import util.IPoint;
 import util.communicator.Message;
 
-public class Board extends Entity<BoardPainter> {
-  private static final int TILEW = 32;
-  private static final int TILESPACE = 4;
+public class Board extends Entity {
+  
 
-  private Canvas drawCanvas;
-  private final BoardConfig config;
+  
+  private BoardConfig boardConfig;
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   private int canvasWidthTiles, canvasHeightTiles;
   private int topLeftx, topLefty;
   
-  public Board(BoardPainter painter, BoardConfig config) {
-    super(painter);
-    this.config = config;
-    painter.attach(this);
-    this.floorTiles = config.getFloorTiles();
-    //unitAtTiles = new Unit[boardConfig.board_width][boardConfig.board_height];
-  }
-  
-
-  @Override
-  public void callbackRecv(Message msg) {
-    // TODO Auto-generated method stub
+  public Board(Canvas canvas, BoardConfig boardConfig) {
+    this.drawCanvas = canvas;
     
-  }
-
-  @Override
-  public void tick() {
-    // TODO Auto-generated method stub
+    IPoint boardDimensions = canvas.dimensions;
+    canvasWidthTiles = Math.min(boardConfig.board_width, boardDimensions.gx() / getFullTileSize());
+    canvasHeightTiles = Math.min(boardConfig.board_height, boardDimensions.gy() / getFullTileSize());
+    topLeftx = 0;
+    topLefty = 0;
     
+    this.boardConfig = boardConfig;
+    this.floorTiles = boardConfig.getFloorTiles();
+    unitAtTiles = new Unit[boardConfig.board_width][boardConfig.board_height];
   }
 
-
-  public BoardConfig getConfig() {
-    return config;
-  }
-
-
-  public boolean hasFloorTileAt(int i, int j) {
-    return floorTiles[i][j];
-  }
-  
-/*
   @Override
   public void redraw(Graphics g) {
     IPoint topLeft = drawCanvas.topLeft;
@@ -201,6 +261,5 @@ public class Board extends Entity<BoardPainter> {
     // TODO Auto-generated method stub
     
   }
-  */
-
 }
+*/

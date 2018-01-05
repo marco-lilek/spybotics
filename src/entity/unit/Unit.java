@@ -13,32 +13,38 @@ import java.util.TreeSet;
 import config.UnitConfig;
 import entity.Board;
 import entity.Entity;
+import entity.player.Player;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
 
 public class Unit extends Entity {
-
+  
+  public enum State {
+    MOVING,
+    ATTACKING,
+    DONE
+  }
+  
   private final Board board;
-  private final UnitConfig unitConfig;
-  private final Color playerColor;
+  private final UnitConfig config;
+  private final Player player;
   
+  private State state;
   private int x,y;
+  private int numRemainingMoves;
   private Set<IPoint> reachableTiles;
-  private int availMoves = 0;
-  private boolean isAttacking;
-  
   private Map<IPoint,Boolean> tail;
   
-  public Unit(int x, int y, Board board, UnitConfig unitConfig, Color playerColor) {
+  public Unit(int x, int y, Board board, UnitConfig config, Player player) {
     this.x = x;
     this.y = y;
-    this.unitConfig = unitConfig;
-    this.playerColor = playerColor;
+    this.config = config;
+    this.player = player;
     
+    state = State.DONE;
     tail = new LinkedHashMap<IPoint,Boolean>();
     reachableTiles = new TreeSet<IPoint>();
-    isAttacking = false;
     
     this.board = board;
     this.board.addUnitAt(this.x, this.y, this);
@@ -47,7 +53,7 @@ public class Unit extends Entity {
   @Override
   public void redraw(Graphics g) {
     int idx = 0;
-    for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext(); idx++) {
+    /*for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext(); idx++) {
       IPoint p = it.next();
       Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
       if (drawCanvas != null) {
@@ -70,47 +76,47 @@ public class Unit extends Entity {
       }
     }
     
-    if (isAttacking()) {
-      
-      for (Iterator<IPoint> it = board.getAdjacentTiles(new IPoint(x, y)).iterator(); it.hasNext();) {
-        IPoint p = it.next();
-        Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
-        if (drawCanvas != null) {
-          g.setColor(new Color(255,12,12));
-          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-          g.setColor(new Color(0,0,0));
-        }
+    for (Iterator<IPoint> it = board.getAdjacentTiles(new IPoint(x, y)).iterator(); it.hasNext();) {
+      IPoint p = it.next();
+      Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
+      if (drawCanvas != null) {
+        g.setColor(new Color(255,12,12));
+        g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+        g.setColor(new Color(0,0,0));
       }
-    }
-    
+    }*/
   }
 
 
-  private void drawTile(Graphics g, Canvas drawCanvas) {
-    g.setColor(unitConfig.getRGB());
+  private Canvas drawTile(Graphics g, int x, int y) {
+    Canvas drawCanvas = board.getTileDrawCanvas(x, y);
+    if (drawCanvas == null) return null;
+    
+    g.setColor(config.getRGB());
     IPoint topLeft = drawCanvas.topLeft;
     IPoint dimensions = drawCanvas.dimensions;
     IPoint shadowOffset = board.getShadowOffset();
-    g.setColor(unitConfig.getRGB().darker());
+    g.setColor(config.getRGB().darker());
     g.fillRect(shadowOffset.gx() + topLeft.gx(), shadowOffset.gy() + topLeft.gy(), dimensions.gx(), dimensions.gy());
-    g.setColor(unitConfig.getRGB());
+    g.setColor(config.getRGB());
     g.fillRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
-    g.setColor(playerColor);
+    g.setColor(player.getColor());
     g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
     g.setColor(new Color(0,0,0));
+    return drawCanvas;
   }
   
-  public void drawTailTile(Graphics g, Canvas drawCanvas, int idx) {
+/*  public void drawTailTile(Graphics g, int idx) {
     IPoint topLeft = drawCanvas.topLeft;
     drawTile(g, drawCanvas);
-    g.setColor(unitConfig.getRGB().darker().darker());
+    g.setColor(config.getRGB().darker().darker());
     g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);
     g.setColor(new Color(0,0,0));
-  }
+  }*/
   
-  public void drawHeadTile(Graphics g, Canvas drawCanvas) {
+/*  public void drawHeadTile(Graphics g, ) {
     drawTile(g, drawCanvas);
-  }
+  }*/
   
   @Override
   public void tick() {
@@ -119,27 +125,17 @@ public class Unit extends Entity {
   }
   
   private void setReachableTiles(int availMoves) {
-    reachableTiles.clear();
-    reachableTiles.add(new IPoint(x, y));
-    for (int i = 0; i < availMoves; i++) {
-      Set<IPoint> newEntries = new TreeSet<IPoint>();
-      for (Iterator<IPoint> rti = reachableTiles.iterator(); rti.hasNext();) {
-        IPoint reachableTile = rti.next();
-        newEntries.addAll(board.getAdjacentTiles(reachableTile));
-      }
-      reachableTiles.addAll(newEntries);
-    }
-    System.out.println(reachableTiles);
+    reachableTiles = board.getAdjacentTiles(new IPoint(x, y), availMoves);
   }
   
   public void resetReachableTiles() {
-    availMoves = unitConfig.movement_speed;
-    setReachableTiles(availMoves);
+    numRemainingMoves = config.getMovementSpeed();
+    setReachableTiles(numRemainingMoves);
   }
   
-  private void popTail() {
-    if (tail.isEmpty()) { // TODO: ovi not sufficient
-      return;
+  private void removeTail() {
+    if (tail.isEmpty()) {
+      // TODO: delete self
     }
     IPoint backOfTail = tail.keySet().iterator().next();
     removeTail(backOfTail.gx(), backOfTail.gy());
@@ -163,8 +159,8 @@ public class Unit extends Entity {
     }
     
     addTail(x, y);
-    if (tail.size() > unitConfig.max_tail_length) {
-      popTail();
+    if (tail.size() > config.max_tail_length) {
+      removeTail();
     }
     tail.remove(new IPoint(xn, yn));
     board.addUnitAt(xn, yn, this);
@@ -172,16 +168,7 @@ public class Unit extends Entity {
     x = xn;
     y = yn;
     System.out.println(new IPoint(x, y));
-    setReachableTiles(--availMoves);
-  }
-
-  public void setAtacking() {
-    isAttacking = true;
-    setReachableTiles(0);
-  }
-
-  public boolean isAttacking() {
-    return isAttacking;
+    setReachableTiles(--numRemainingMoves);
   }
 
   public void attack(int xt, int yt) {
@@ -196,6 +183,10 @@ public class Unit extends Entity {
     while (amount-- >= 0) {
       popTail();
     }
+  }
+
+  public Player getPlayer() {
+    return player;
   }
 
 }

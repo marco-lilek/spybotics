@@ -2,6 +2,9 @@ package entity.player;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import config.UnitConfig;
@@ -12,36 +15,44 @@ import entity.Entity;
 import entity.unit.Unit;
 import screen.MatchScreen;
 import screen.Screen;
-import util.CallbackNotifier;
 import util.JSONLoader;
+import util.communicator.CallbackNotifier;
 
 public abstract class Player extends Entity {
-  protected Unit unit; // TODO: just temp for experimenting
-  private final Color color;
+  public static final String TURN_COMPLETE = "TURN_COMPLETE";
+  
+  protected Set<Unit> units;
   
   public Player(Board board, Screen screen) {
-    color = new Color(ThreadLocalRandom.current().nextInt(0, 256), ThreadLocalRandom.current().nextInt(0, 256),ThreadLocalRandom.current().nextInt(0, 256));
-    unit = new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class), color);
+    Color color = new Color(ThreadLocalRandom.current().nextInt(0, 256), ThreadLocalRandom.current().nextInt(0, 256),ThreadLocalRandom.current().nextInt(0, 256));
+    units = new TreeSet<Unit>();
+    units.add(new Unit(0, 0, board, JSONLoader.getLoader().loadJSONFromFile("config/test_unit.json", UnitConfig.class), this));
     addListener(screen);
   }
 
   public void handleKeyStroke(Key key) {
   }
 
-  // TODO: remove block BEGIN
   @Override
   public void redraw(Graphics g) {
-    unit.redraw(g);
+    for (Iterator<Unit> it = units.iterator(); it.hasNext(); ) {
+      Unit activeUnit = it.next();
+      activeUnit.redraw(g);
+    }
   }
-
-  @Override
-  public void tick() {
+  
+  protected Set<Unit> getUnits() {
+    return units;
   }
-  // TODO: remove block END
   
   protected void finishTurn() {
-    notifyListeners(true);
+    notifyListeners(TURN_COMPLETE);
   }
 
   public abstract void startTurn();
+
+  public Color getColor() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

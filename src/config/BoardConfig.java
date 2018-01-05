@@ -37,4 +37,12 @@ public class BoardConfig {
     
     return floorTiles;
   }
+
+  public int getWidthTiles() {
+    return board_width;
+  }
+  
+  public int getHeightTiles() {
+    return board_height;
+  }
 }

@@ -23,7 +23,6 @@ import javax.swing.Timer;
 
 import com.google.gson.Gson;
 
-import core.keyboard.KeyboardManager;
 import entity.Board;
 import util.IPoint;
 

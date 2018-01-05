@@ -9,54 +9,16 @@ import screen.MatchScreen;
 import screen.Screen;
 
 public class HumanPlayer extends Player {
-
-  private boolean controlCursor;
+  
   private final Cursor cursor;
   
   public HumanPlayer(Board board, Screen screen) {
     super(board, screen);
-    controlCursor = true;
     cursor = new Cursor(board);
   }
 
   public void handleKeyStroke(Key key) {
-    int xd=0,yd=0;
-    switch (key) {
-    case LEFT:
-      xd = -1;
-      break;
-    case RIGHT:
-      xd = 1;
-      break;
-    case UP:
-      yd = -1;
-      break;
-    case DOWN:
-      yd = 1;
-      break;
-    case SPACE:
-      controlCursor = !controlCursor;
-      if (!controlCursor) {
-        unit.resetReachableTiles();
-      }
-      break;
-    case E:
-      finishTurn();
-      break;
-    case A:
-      unit.setAtacking();
-      return;
-    }
-    
-    if (controlCursor) {
-      cursor.move(xd, yd);
-    } else {
-      if (unit.isAttacking()) {
-        unit.attack(xd, yd);
-      } else {
-        unit.move(xd, yd);
-      }
-    }
+    cursor.handleKeyStroke(key);
   }
 
   @Override

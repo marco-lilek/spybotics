@@ -12,25 +12,24 @@ import java.util.Set;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 
-import core.keyboard.Key;
-import core.keyboard.KeyboardManager;
 import core.sprite.SpriteManager;
 import entity.Board;
 import screen.Screen;
 import screen.ScreenFactory;
-import screen.ScreenType;
-import util.CallbackListener;
-import util.IPoint;
+import util.communicator.CallbackListener;
+import util.communicator.Communicator;
+import util.communicator.Message;
 
-public class Game implements CallbackListener<Key> {
+public class Game extends Communicator {
 
+  public static final String NAME = "Game";
   private Map<String, String> globalGameConfig;
   private Screen activeScreen;
   
   Game(KeyboardManager keyboardManager) {
-    keyboardManager.addListener(this);
+    keyboardManager.addListener(NAME, this);
     globalGameConfig = new HashMap<String, String>();
-    activeScreen = ScreenFactory.getScreen(ScreenType.TEST_SCREEN, globalGameConfig);
+    activeScreen = ScreenFactory.getScreen(Message.GAME_SCREEN_MATCH, this);
   }
 
   public void redraw(Graphics g) {
@@ -38,15 +37,21 @@ public class Game implements CallbackListener<Key> {
   }
   
   public void tick() {
-    ScreenType nextScreenType = activeScreen.tick();
+    activeScreen.tick();
+/*    ScreenType nextScreenType = activeScreen.tick();
     if (nextScreenType != activeScreen.getType()) {
       // Transition to a new screen, deletes all entities in the active screen
-      activeScreen = ScreenFactory.getScreen(nextScreenType, globalGameConfig);
-    }
+      ;
+    }*/
   }
 
   @Override
-  public void callback(Key msgFromKeyboard) {
-    activeScreen.handleKeyStroke(msgFromKeyboard);
+  public void callbackRecv(Message msg) {
+    if (msg.is(Message.MsgTypes.KEYBOARD)) {
+      activeScreen.handleKeyStroke(msg);
+    } else if (msg.is(Message.MsgTypes.GAME_SCREEN)) {
+      activeScreen = ScreenFactory.getScreen(msg, this);
+    }
+    System.out.println(activeScreen);
   }
 }
