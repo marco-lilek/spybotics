@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import config.UnitConfig;
 import entity.Board;
 import entity.Entity;
+import entity.painter.UnitPainter;
 import entity.player.Player;
 import util.Canvas;
 import util.Direction;
@@ -22,25 +23,34 @@ import util.communicator.Message;
 public class Unit extends Entity {
 
   public enum State {
+    IDLE,
     MOVING,
     ATTACKING,
     DONE
   }
   
   private State state;
+  private final UnitConfig config;
   private int numRemainingMoves;
   private int x,y;
   private final Board board;
-  private UnitPainter painter;
-  //private Map<IPoint,Boolean> tail;
+  private final UnitPainter painter;
   
-  public Unit(Board board, UnitPainter painter) {
-    int x = 0, y = 0;
+  private Map<IPoint,Boolean> tail;
+  
+  public Unit(Board board, UnitPainter painter, UnitConfig config, int x, int y) {
+    state = State.IDLE;
+    this.config = config;
+    this.x = x;
+    this.y = y;
     this.board = board;
     this.painter = painter;
+    tail = new LinkedHashMap<IPoint,Boolean>();
+    
     numRemainingMoves = 5;
     board.addUnitAt(x, y, this);
     painter.attach(this);
+    
   }
 
   @Override
@@ -49,16 +59,43 @@ public class Unit extends Entity {
     
   }
   
+  private void removeTail() {
+    if (tail.isEmpty()) {
+      // TODO: delete self
+    }
+    IPoint backOfTail = tail.keySet().iterator().next();
+    removeTail(backOfTail.gx(), backOfTail.gy());
+  }
+  
+  private void removeTail(int x, int y) {
+    tail.remove(new IPoint(x, y));
+    board.removeUnitAt(x, y);
+  }
+  
+  private void addTail(int x, int y) {
+    tail.put(new IPoint(x, y), true);
+    board.addUnitAt(x, y, this);
+  }
+  
   public boolean move(int xd, int yd) {
     int xn = x + xd;
     int yn = y + yd;
-    if (!board.isOpenAt(xn, yn)) {
+    Unit unitAtN = board.getUnitAt(xn, yn);
+    if (!board.isOpenAt(xn, yn) || (unitAtN != this && unitAtN != null)) {
       return false;
     }
-    board.removeUnitAt(x, y);
+    
+    addTail(x, y);
+    if (tail.size() > config.max_tail_length) {
+      removeTail();
+    }
+    tail.remove(new IPoint(xn, yn));
+    board.addUnitAt(xn, yn, this);
+    
     x = xn;
     y = yn;
-    board.addUnitAt(x, y, this);
+    System.out.println(new IPoint(x, y));
+    --numRemainingMoves;
     return true;
   }
 
@@ -76,6 +113,14 @@ public class Unit extends Entity {
     // TODO Auto-generated method stub
     return y;
   }
+  
+  public Map<IPoint,Boolean> getTail() {
+    return tail;
+  }
+  
+  public UnitConfig getConfig() {
+    return config;
+  }
 
   @Override
   public void redraw(Graphics g) {
@@ -86,11 +131,7 @@ public class Unit extends Entity {
 /*
 public class Unit extends Entity<UnitPainter> {
   
-  public enum State {
-    MOVING,
-    ATTACKING,
-    DONE
-  }
+
   
   private final Board board;
   private final UnitConfig config;

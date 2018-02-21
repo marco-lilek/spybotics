@@ -15,12 +15,9 @@ public class BoardPainter extends EntityPainter {
   private final Canvas drawCanvas;
   private Board board;
   private int canvasWidthTiles, canvasHeightTiles;
-  private int topLeftTilex, topLeftTiley;
   
   public BoardPainter(Canvas availCanvasFromScreen) {
     this.drawCanvas = availCanvasFromScreen;
-    topLeftTilex = 0;
-    topLeftTiley = 0;
   }
   
   public void attach(Board board) {
@@ -29,6 +26,12 @@ public class BoardPainter extends EntityPainter {
     IPoint boardDimensions = drawCanvas.dimensions;
     canvasWidthTiles = Math.min(board.getConfig().getWidthTiles(), boardDimensions.gx() / getFullTileSize());
     canvasHeightTiles = Math.min(board.getConfig().getHeightTiles(), boardDimensions.gy() / getFullTileSize());
+    
+    int totalWidthTiles = board.getConfig().getWidthTiles();
+    int totalHeightTiles = board.getConfig().getHeightTiles();
+    if (totalWidthTiles != canvasWidthTiles) throw new IllegalArgumentException("canvas width " + String.valueOf(canvasWidthTiles) + " " + String.valueOf(totalWidthTiles));
+    if (totalHeightTiles != canvasHeightTiles) throw new IllegalArgumentException("canvas height " + String.valueOf(canvasHeightTiles) + " " + String.valueOf(totalHeightTiles));
+    
   }
   
   public static int getFullTileSize() {
@@ -43,6 +46,7 @@ public class BoardPainter extends EntityPainter {
     
     int totalWidthTiles = board.getConfig().getWidthTiles();
     int totalHeightTiles = board.getConfig().getHeightTiles();
+    
     for (int i = 0; i < totalWidthTiles; i++) {
       for (int j = 0; j < totalHeightTiles; j++) {
         if (board.hasFloorTileAt(i, j)) {
@@ -58,7 +62,7 @@ public class BoardPainter extends EntityPainter {
   }
   
   public Canvas getTileDrawCanvas(int x, int y) {
-    if (x < topLeftTilex || y < topLeftTiley  || x >= topLeftTilex + canvasWidthTiles || y >= topLeftTiley + canvasHeightTiles) {
+    if (x < 0 || y < 0  || x >= canvasWidthTiles || y >= canvasHeightTiles) {
       return null; // don't draw
     }
     int adjX = offsetTilex(x);
@@ -69,36 +73,16 @@ public class BoardPainter extends EntityPainter {
   }
   
   private int offsetTilex(int x) {
-    return drawCanvas.topLeft.gx() + (x - topLeftTilex) * getFullTileSize();
+    return drawCanvas.topLeft.gx() + (x) * getFullTileSize();
   }
   
   private int offsetTiley(int y) {
-    return drawCanvas.topLeft.gy() + (y - topLeftTiley) * getFullTileSize();
+    return drawCanvas.topLeft.gy() + (y) * getFullTileSize();
   }
 
   public Canvas getTilesCanvas() {
-    return new Canvas(new IPoint(topLeftTilex, topLeftTiley), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
-  }
-
-  public void shiftCanvas(Direction direction) {
-    switch (direction) {
-    case NORTH:
-      topLeftTiley--;
-      break;
-    case SOUTH:
-      topLeftTiley++;
-      break;
-    case EAST:
-      topLeftTilex++;
-      break;
-    case WEST:
-      topLeftTilex--;
-      break;
-    default:
-      break;
-    }
-  }
-  
+    return new Canvas(new IPoint(0, 0), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
+  }  
 }
 
 /*

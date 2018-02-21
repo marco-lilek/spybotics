@@ -13,10 +13,12 @@ import util.communicator.Message;
 public class HumanPlayer extends Player {
   
   private final Cursor cursor;
+  private final MatchScreen screen;
   
-  public HumanPlayer(Board board, Screen screen, BoardPainter boardPainter) {
+  public HumanPlayer(Board board, MatchScreen screen, BoardPainter boardPainter) {
     super(board, screen);
-    cursor = new Cursor(screen, board, new CursorPainter(boardPainter));
+    this.screen = screen;
+    cursor = new Cursor(screen, board, new CursorPainter(boardPainter), this);
   }
 
   public void handleKeyboardMsg(Message msgFromKeyboard) {
@@ -27,7 +29,9 @@ public class HumanPlayer extends Player {
   @Override
   public void redraw(Graphics g) {
     super.redraw(g);
-    cursor.redraw(g);
+    if (screen.whosTurn() == this) {
+      cursor.redraw(g);
+    }
   }
 
   @Override

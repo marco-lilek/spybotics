@@ -31,15 +31,4 @@ public class CursorPainter extends EntityPainter {
     }
   }
 
-  public void move(int xn, int yn) {
-    Canvas tilesCanvas = boardPainter.getTilesCanvas();
-    IPoint topLeft = tilesCanvas.topLeft;
-    IPoint bottomRight = tilesCanvas.getBottomRight();
-    
-    if (cursor.gx() < topLeft.gx()) boardPainter.shiftCanvas(Direction.WEST);
-    if (cursor.gx() > bottomRight.gx()) boardPainter.shiftCanvas(Direction.EAST);
-    if (cursor.gy() < topLeft.gy()) boardPainter.shiftCanvas(Direction.NORTH);
-    if (cursor.gy() > bottomRight.gy()) boardPainter.shiftCanvas(Direction.SOUTH);
-  }
-
 }

@@ -23,7 +23,6 @@ public abstract class Player extends Entity {
   protected Set<Unit> units;
   
   public Player(Board board, Screen screen) {
-    Color color = new Color(ThreadLocalRandom.current().nextInt(0, 256), ThreadLocalRandom.current().nextInt(0, 256),ThreadLocalRandom.current().nextInt(0, 256));
     units = new TreeSet<Unit>();
     addListener(screen.getName(), screen);
   }
@@ -36,12 +35,16 @@ public abstract class Player extends Entity {
     }
   }
   
-  protected Set<Unit> getUnits() {
+  public Set<Unit> getUnits() {
     return units;
   }
   
   protected void finishTurn() {
     notifyListeners(Message.PLAYER_TURN_COMPLETE);
+  }
+
+  public void own(Unit u) {
+    units.add(u);
   }
 
 }

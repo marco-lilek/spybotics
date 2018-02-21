@@ -16,11 +16,11 @@ import entity.Cursor;
 import entity.Entity;
 import entity.painter.BoardPainter;
 import entity.painter.CursorPainter;
+import entity.painter.UnitPainter;
 import entity.player.AIPlayer;
 import entity.player.HumanPlayer;
 import entity.player.Player;
 import entity.unit.Unit;
-import entity.unit.UnitPainter;
 import util.Canvas;
 import util.IPoint;
 import util.JSONLoader;
@@ -44,18 +44,26 @@ public class MatchScreen extends Screen {
     game.addListener(getName(), this);
     gameName = game.getName();
     BoardPainter p = new BoardPainter(new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT)));
-    Board b = new Board(p, JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    Unit u = new Unit(b, new UnitPainter(p));
-    this.getEntities().add(u);
+    
+    JSONLoader configLoader = JSONLoader.getLoader();
+    Board b = new Board(p, configLoader.loadJSONFromFile("config/test_board.json", BoardConfig.class));
+    
+    Unit u1 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
+    Unit u2 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
+    this.getEntities().add(u1);
+    this.getEntities().add(u2);
     this.getEntities().add(b);
     
     activePlayer = 0;
     players = new ArrayList<Player>();
-    players.add(new HumanPlayer(b, this, p));
+    players.add(new HumanPlayer(b, this, p));    
     players.add(new HumanPlayer(b, this, p));
     for (Player player : players) {
       this.getEntities().add(player);
     }
+    
+    players.get(0).own(u1);
+    players.get(1).own(u2);
   }
 
   @Override
@@ -74,6 +82,11 @@ public class MatchScreen extends Screen {
     // TODO Auto-generated method stub
     return "MatchScreen";
   }
+  
+  public Player whosTurn() {
+    return players.get(activePlayer);
+  }
+  
 
 /*  private enum MatchState {
     LOADING,  // Players are selecting their units

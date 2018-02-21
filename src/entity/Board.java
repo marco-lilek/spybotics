@@ -52,7 +52,7 @@ public class Board extends Entity {
   }
 
   public boolean isOpenAt(int x, int y) {
-    return isInBounds(x, y) && floorTiles[x][y] && unitAtTiles[x][y] == null;
+    return isInBounds(x, y) && floorTiles[x][y];
   }
   
   public void addUnitAt(int x, int y, Unit u) {

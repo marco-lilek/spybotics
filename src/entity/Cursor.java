@@ -15,11 +15,13 @@ import util.communicator.Message;
 public class Cursor extends Entity {
 
   private int x,y;
-  private Board board;
+  private final Board board;
   private Unit selectedUnit;
-  private CursorPainter painter;
+  private final Player player;
+  private final CursorPainter painter;
   
-  public Cursor(Screen screen, Board board, CursorPainter painter) {
+  public Cursor(Screen screen, Board board, CursorPainter painter, Player player) {
+    this.player = player;
     this.board = board;
     this.painter = painter;
     painter.attach(this);
@@ -108,7 +110,8 @@ public class Cursor extends Entity {
       selectedUnit.undoMove();
       selectedUnit = null;
     } else {
-      selectedUnit = board.getUnitAt(x, y);
+      Unit unitAt = board.getUnitAt(x, y);
+      if (unitAt != null && player.getUnits().contains(unitAt)) selectedUnit = unitAt;
     }
   }
 

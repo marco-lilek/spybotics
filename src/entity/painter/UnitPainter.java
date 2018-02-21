@@ -1,7 +1,8 @@
-package entity.unit;
+package entity.painter;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -10,9 +11,8 @@ import java.util.TreeSet;
 import config.UnitConfig;
 import entity.Board;
 import entity.Entity;
-import entity.painter.BoardPainter;
-import entity.painter.EntityPainter;
 import entity.player.Player;
+import entity.unit.Unit;
 import entity.unit.Unit.State;
 import util.Canvas;
 import util.IPoint;
@@ -29,12 +29,33 @@ public class UnitPainter extends EntityPainter {
   public void redraw(Graphics g) {
     Canvas canvas = boardPainter.getTileDrawCanvas(unit.gx(), unit.gy());
     if (canvas != null) {
-      g.setColor(new Color(255,0,0));
-      g.fillRect(canvas.topLeft.gx(), canvas.topLeft.gy(), canvas.dimensions.gx(), canvas.dimensions.gy());
-      g.setColor(new Color(0,0,0));
+      drawTile(g, canvas);
+    }
+    
+    int idx = 0;
+    for (Iterator<IPoint> it = unit.getTail().keySet().iterator(); it.hasNext(); idx++) {
+      IPoint p = it.next();
+      Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+      if (drawCanvas != null) {
+        drawTailTile(g, drawCanvas, idx + 1);
+      }
     }
   }
 
+  private void drawTile(Graphics g, Canvas canvas) {
+    g.setColor(new Color(255,0,0));
+    g.fillRect(canvas.topLeft.gx(), canvas.topLeft.gy(), canvas.dimensions.gx(), canvas.dimensions.gy());
+    g.setColor(new Color(0,0,0));
+  }
+  
+  private void drawTailTile(Graphics g, Canvas drawCanvas, int idx) {
+    IPoint topLeft = drawCanvas.topLeft;
+    drawTile(g, drawCanvas);
+    g.setColor(unit.getConfig().getRGB().darker().darker());
+    g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);
+    g.setColor(new Color(0,0,0));
+  }
+  
   public void attach(Unit unit) {
     this.unit = unit;
   }

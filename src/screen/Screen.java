@@ -38,5 +38,4 @@ public abstract class Screen extends Communicator {
   protected ArrayList<Entity> getEntities() {
     return entities;
   }
-  
 }
