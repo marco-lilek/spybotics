@@ -17,8 +17,74 @@ import entity.player.Player;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
+import util.communicator.Message;
 
 public class Unit extends Entity {
+
+  public enum State {
+    MOVING,
+    ATTACKING,
+    DONE
+  }
+  
+  private State state;
+  private int numRemainingMoves;
+  private int x,y;
+  private final Board board;
+  private UnitPainter painter;
+  //private Map<IPoint,Boolean> tail;
+  
+  public Unit(Board board, UnitPainter painter) {
+    int x = 0, y = 0;
+    this.board = board;
+    this.painter = painter;
+    numRemainingMoves = 5;
+    board.addUnitAt(x, y, this);
+    painter.attach(this);
+  }
+
+  @Override
+  public void tick() {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  public boolean move(int xd, int yd) {
+    int xn = x + xd;
+    int yn = y + yd;
+    if (!board.isOpenAt(xn, yn)) {
+      return false;
+    }
+    board.removeUnitAt(x, y);
+    x = xn;
+    y = yn;
+    board.addUnitAt(x, y, this);
+    return true;
+  }
+
+  public void undoMove() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public int gx() {
+    // TODO Auto-generated method stub
+    return x;
+  }
+  
+  public int gy() {
+    // TODO Auto-generated method stub
+    return y;
+  }
+
+  @Override
+  public void redraw(Graphics g) {
+    painter.redraw(g);
+  }
+}
+
+/*
+public class Unit extends Entity<UnitPainter> {
   
   public enum State {
     MOVING,
@@ -53,7 +119,7 @@ public class Unit extends Entity {
   @Override
   public void redraw(Graphics g) {
     int idx = 0;
-    /*for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext(); idx++) {
+    for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext(); idx++) {
       IPoint p = it.next();
       Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
       if (drawCanvas != null) {
@@ -84,7 +150,7 @@ public class Unit extends Entity {
         g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
         g.setColor(new Color(0,0,0));
       }
-    }*/
+    }
   }
 
 
@@ -106,17 +172,17 @@ public class Unit extends Entity {
     return drawCanvas;
   }
   
-/*  public void drawTailTile(Graphics g, int idx) {
+  public void drawTailTile(Graphics g, int idx) {
     IPoint topLeft = drawCanvas.topLeft;
     drawTile(g, drawCanvas);
     g.setColor(config.getRGB().darker().darker());
     g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);
     g.setColor(new Color(0,0,0));
-  }*/
+  }
   
-/*  public void drawHeadTile(Graphics g, ) {
+  public void drawHeadTile(Graphics g, ) {
     drawTile(g, drawCanvas);
-  }*/
+  }
   
   @Override
   public void tick() {
@@ -189,4 +255,17 @@ public class Unit extends Entity {
     return player;
   }
 
+  @Override
+  public void callbackRecv(Message msg) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public String getName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }
+*/

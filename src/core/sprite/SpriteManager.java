@@ -20,7 +20,6 @@ public class SpriteManager {
     private final int bgColorRGB;
     
     FilterBGColor(Color bgColor) {
-      super();
       bgColorRGB = bgColor.getRGB() & 0x00ffffff;
     }
     

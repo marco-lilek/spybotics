@@ -1,30 +1,30 @@
-package entity;
+package entity.painter;
 
 import util.Canvas;
 import util.Direction;
 
 import java.awt.Graphics;
 
+import entity.Board;
 import util.IPoint;
 
-public class BoardPainter extends EntityPainter<Board> {
+public class BoardPainter extends EntityPainter {
   private static final int TILEW = 32;
   private static final int TILESPACE = 4;
   
   private final Canvas drawCanvas;
+  private Board board;
   private int canvasWidthTiles, canvasHeightTiles;
   private int topLeftTilex, topLeftTiley;
   
   public BoardPainter(Canvas availCanvasFromScreen) {
-    super();
     this.drawCanvas = availCanvasFromScreen;
     topLeftTilex = 0;
     topLeftTiley = 0;
   }
   
-  @Override
   public void attach(Board board) {
-    super.attach(board);
+    this.board = board;
     System.out.println(board.getConfig());
     IPoint boardDimensions = drawCanvas.dimensions;
     canvasWidthTiles = Math.min(board.getConfig().getWidthTiles(), boardDimensions.gx() / getFullTileSize());
@@ -41,11 +41,11 @@ public class BoardPainter extends EntityPainter<Board> {
     IPoint dimensions = drawCanvas.dimensions;
     g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
     
-    int totalWidthTiles = getLogicContainer().getConfig().getWidthTiles();
-    int totalHeightTiles = getLogicContainer().getConfig().getHeightTiles();
+    int totalWidthTiles = board.getConfig().getWidthTiles();
+    int totalHeightTiles = board.getConfig().getHeightTiles();
     for (int i = 0; i < totalWidthTiles; i++) {
       for (int j = 0; j < totalHeightTiles; j++) {
-        if (getLogicContainer().hasFloorTileAt(i, j)) {
+        if (board.hasFloorTileAt(i, j)) {
           Canvas floorTileCanvas = getTileDrawCanvas(i, j);
           if (floorTileCanvas != null) {
             IPoint ftTopLeft = floorTileCanvas.topLeft;

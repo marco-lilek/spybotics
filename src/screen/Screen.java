@@ -2,6 +2,7 @@ package screen;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,11 +16,11 @@ import util.communicator.Message;
 
 public abstract class Screen extends Communicator {
   
-  private Set<Entity> entities;
+  private ArrayList<Entity> entities;
   
   Screen(Game game) {
     addListener(game.getName(), game);
-    entities = new TreeSet<Entity>();
+    entities = new ArrayList<Entity>();
   }
   
   public void tick() {
@@ -34,7 +35,8 @@ public abstract class Screen extends Communicator {
     }
   }
 
-  protected Set<Entity> getEntities() {
+  protected ArrayList<Entity> getEntities() {
     return entities;
   }
+  
 }

@@ -2,23 +2,26 @@ package entity.player;
 
 import java.awt.Graphics;
 
-import core.keyboard.Key;
 import entity.Board;
 import entity.Cursor;
+import entity.painter.BoardPainter;
+import entity.painter.CursorPainter;
 import screen.MatchScreen;
 import screen.Screen;
+import util.communicator.Message;
 
 public class HumanPlayer extends Player {
   
   private final Cursor cursor;
   
-  public HumanPlayer(Board board, Screen screen) {
+  public HumanPlayer(Board board, Screen screen, BoardPainter boardPainter) {
     super(board, screen);
-    cursor = new Cursor(board);
+    cursor = new Cursor(screen, board, new CursorPainter(boardPainter));
   }
 
-  public void handleKeyStroke(Key key) {
-    cursor.handleKeyStroke(key);
+  public void handleKeyboardMsg(Message msgFromKeyboard) {
+    if (msgFromKeyboard == Message.KEYBOARD_KEY_A) finishTurn();
+    cursor.handleKeyboardMsg(msgFromKeyboard);
   }
 
   @Override
@@ -29,13 +32,5 @@ public class HumanPlayer extends Player {
 
   @Override
   public void tick() {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void startTurn() {
-    // TODO Auto-generated method stub
-    
   }
 }

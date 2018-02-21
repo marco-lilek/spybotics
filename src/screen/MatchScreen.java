@@ -1,7 +1,10 @@
 package screen;
 
 import java.awt.Graphics;
+import java.awt.List;
 import java.awt.event.ActionEvent;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Set;
 
 import config.BoardConfig;
@@ -9,18 +12,21 @@ import config.UnitConfig;
 import core.Game;
 import core.sprite.SpriteManager;
 import entity.Board;
-import entity.BoardPainter;
 import entity.Cursor;
-import entity.CursorPainter;
+import entity.Entity;
+import entity.painter.BoardPainter;
+import entity.painter.CursorPainter;
 import entity.player.AIPlayer;
 import entity.player.HumanPlayer;
 import entity.player.Player;
 import entity.unit.Unit;
+import entity.unit.UnitPainter;
 import util.Canvas;
 import util.IPoint;
 import util.JSONLoader;
 import util.communicator.Communicator;
 import util.communicator.Message;
+import util.communicator.Message.MsgTypes;
 
 public class MatchScreen extends Screen {
 
@@ -30,7 +36,8 @@ public class MatchScreen extends Screen {
   private static final int BOARD_HEIGHT = BoardPainter.getFullTileSize() * 11;
   
   private final String gameName;
-  private final String cursorName;
+  private final AbstractList<Player> players;
+  private int activePlayer;
   
   MatchScreen(Game game) {
     super(game);
@@ -38,16 +45,28 @@ public class MatchScreen extends Screen {
     gameName = game.getName();
     BoardPainter p = new BoardPainter(new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT)));
     Board b = new Board(p, JSONLoader.getLoader().loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    Cursor c = new Cursor(this, b, new CursorPainter(p));
-    cursorName = c.getName();
+    Unit u = new Unit(b, new UnitPainter(p));
+    this.getEntities().add(u);
     this.getEntities().add(b);
-    this.getEntities().add(c);
     
+    activePlayer = 0;
+    players = new ArrayList<Player>();
+    players.add(new HumanPlayer(b, this, p));
+    players.add(new HumanPlayer(b, this, p));
+    for (Player player : players) {
+      this.getEntities().add(player);
+    }
   }
 
   @Override
   public void callbackRecv(Message msg) {
-    notifyListener(cursorName, msg);
+    if (msg == Message.PLAYER_TURN_COMPLETE) {
+      activePlayer  = (1 + activePlayer) % players.size();
+    }
+    
+    if (msg.is(MsgTypes.KEYBOARD)) {
+      players.get(activePlayer).handleKeyboardMsg(msg);
+    }
   }
   
   @Override

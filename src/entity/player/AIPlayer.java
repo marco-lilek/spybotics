@@ -11,11 +11,6 @@ public class AIPlayer extends Player {
   }
 
   @Override
-  public void startTurn() {
-    finishTurn();
-  }
-
-  @Override
   public void tick() {
     // TODO Auto-generated method stub
     

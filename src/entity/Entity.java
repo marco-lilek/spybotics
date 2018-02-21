@@ -5,21 +5,15 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 
+import entity.painter.EntityPainter;
 import util.communicator.CallbackListener;
 import util.communicator.CallbackNotifier;
 import util.communicator.Communicator;
+import util.communicator.Message;
 
-public abstract class Entity<T extends EntityPainter> extends Communicator implements Comparable {
+public abstract class Entity extends CallbackNotifier<Message> implements Comparable {
 
-  private final T painter;
-  
-  public Entity(T painter) {
-    this.painter = painter;
-  }
-  
-  public void redraw(Graphics g) {
-    painter.redraw(g);
-  }
+  public abstract void redraw(Graphics g); 
   
   public abstract void tick();
   
@@ -28,7 +22,5 @@ public abstract class Entity<T extends EntityPainter> extends Communicator imple
     return Integer.compare(this.hashCode(), arg0.hashCode());
   }
   
-  protected T getPainter() {
-    return painter;
-  }
+  public void handleKeyboardMsg(Message msgFromKeyboard) {}
 }

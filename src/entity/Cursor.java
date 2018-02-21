@@ -3,6 +3,7 @@ package entity;
 import java.awt.Graphics;
 
 import core.Game;
+import entity.painter.CursorPainter;
 import entity.player.Player;
 import entity.unit.Unit;
 import screen.Screen;
@@ -11,19 +12,20 @@ import util.Direction;
 import util.IPoint;
 import util.communicator.Message;
 
-public class Cursor extends Entity<CursorPainter> {
+public class Cursor extends Entity {
 
   private int x,y;
   private Board board;
+  private Unit selectedUnit;
+  private CursorPainter painter;
   
   public Cursor(Screen screen, Board board, CursorPainter painter) {
-    super(painter);
     this.board = board;
+    this.painter = painter;
     painter.attach(this);
-    screen.addListener(getName(), this);
   }
 
-  public void move(int xd, int yd) {
+  private void move(int xd, int yd) {
     int xn = x + xd;
     int yn = y + yd;
     if (!board.isInBounds(xn, yn)) {
@@ -31,8 +33,6 @@ public class Cursor extends Entity<CursorPainter> {
     }
     x = xn;
     y = yn;
-    
-    this.getPainter().move(xn, yn);
   }
 
 /*  public void handleKeyStroke(Key key) {
@@ -75,7 +75,7 @@ public class Cursor extends Entity<CursorPainter> {
   }
 
   @Override
-  public void callbackRecv(Message msg) {
+  public void handleKeyboardMsg(Message msg) {
     int xd=0,yd=0;
     switch (msg) {
     case KEYBOARD_KEY_LEFT:
@@ -90,11 +90,26 @@ public class Cursor extends Entity<CursorPainter> {
     case KEYBOARD_KEY_DOWN:
       yd = 1;
       break;
+    case KEYBOARD_KEY_SPACE:
+      toggleUnitSelection();
+      return;
     default:
       break;
     }
     
+    if (selectedUnit != null && !selectedUnit.move(xd, yd)) {
+      return;
+    }
     move(xd, yd);
+  }
+  
+  private void toggleUnitSelection() {
+    if (selectedUnit != null) {
+      selectedUnit.undoMove();
+      selectedUnit = null;
+    } else {
+      selectedUnit = board.getUnitAt(x, y);
+    }
   }
 
 
@@ -105,7 +120,7 @@ public class Cursor extends Entity<CursorPainter> {
   }
 
   @Override
-  public String getName() {
-    return "Cursor";
+  public void redraw(Graphics g) {
+    painter.redraw(g);
   }
 }

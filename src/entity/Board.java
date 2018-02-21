@@ -11,39 +11,27 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import config.BoardConfig;
+import entity.painter.BoardPainter;
 import entity.unit.Unit;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
 import util.communicator.Message;
 
-public class Board extends Entity<BoardPainter> {
+public class Board extends Entity {
 
+  private BoardPainter painter;
   private final BoardConfig config;
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   
   public Board(BoardPainter painter, BoardConfig config) {
-    super(painter);
     this.config = config;
+    this.painter = painter;
     painter.attach(this);
     this.floorTiles = config.getFloorTiles();
-    //unitAtTiles = new Unit[boardConfig.board_width][boardConfig.board_height];
+    unitAtTiles = new Unit[config.getWidthTiles()][config.getHeightTiles()];
   }
-  
-
-  @Override
-  public void callbackRecv(Message msg) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void tick() {
-    // TODO Auto-generated method stub
-    
-  }
-
 
   public BoardConfig getConfig() {
     return config;
@@ -58,10 +46,32 @@ public class Board extends Entity<BoardPainter> {
   public boolean isInBounds(int x, int y) {
     return !(x < 0 || x >=  config.getWidthTiles() || y < 0 || y >= config.getHeightTiles());
   }
+
+  public Unit getUnitAt(int x, int y) {
+    return unitAtTiles[x][y];
+  }
+
+  public boolean isOpenAt(int x, int y) {
+    return isInBounds(x, y) && floorTiles[x][y] && unitAtTiles[x][y] == null;
+  }
+  
+  public void addUnitAt(int x, int y, Unit u) {
+    this.unitAtTiles[x][y] = u;
+  }
+
+  public void removeUnitAt(int x, int y) {
+    this.unitAtTiles[x][y] = null;
+  }
+
+  @Override
+  public void redraw(Graphics g) {
+    painter.redraw(g);
+  }
   
   @Override
-  public String getName() {
-    return "Board";
+  public void tick() {
+    // TODO Auto-generated method stub
+    
   }
   
 /*
@@ -116,9 +126,7 @@ public class Board extends Entity<BoardPainter> {
     return isInBounds(x, y) && floorTiles[x][y];
   }
   
-  public void addUnitAt(int x, int y, Unit u) {
-    this.unitAtTiles[x][y] = u;
-  }
+  
   
   private int offsetTilex(int x) {
     return drawCanvas.topLeft.gx() + (x - topLeftx) * getFullTileSize();

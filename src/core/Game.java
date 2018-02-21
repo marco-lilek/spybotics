@@ -51,7 +51,6 @@ public class Game extends Communicator {
     } else if (msg.is(Message.MsgTypes.GAME_SCREEN)) {
       activeScreen = ScreenFactory.getScreen(msg, this);
     }
-    System.out.println(activeScreen);
   }
   
   @Override
