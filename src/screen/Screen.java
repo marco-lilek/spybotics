@@ -40,4 +40,8 @@ public abstract class Screen extends Communicator {
   protected ArrayList<Entity> getEntities() {
     return entities;
   }
+
+  public void removeEntity(Entity e) {
+    entities.remove(e);
+  }
 }

@@ -18,6 +18,7 @@ import entity.Entity;
 import entity.painter.UnitPainter;
 import entity.player.Player;
 import entity.unit.Unit.State;
+import screen.Screen;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
@@ -39,13 +40,16 @@ public class Unit extends Entity {
   private int x,y;
   private final Board board;
   private final UnitPainter painter;
+  private Player owner;
+  private final Screen screen;
   
   private IPoint prev;
   private Map<IPoint,Boolean> prevTail;
   
   private Map<IPoint,Boolean> tail;
   
-  public Unit(Board board, UnitPainter painter, UnitConfig config, int x, int y) {
+  public Unit(Screen screen, Board board, UnitPainter painter, UnitConfig config, int x, int y) {
+    this.screen = screen;
     state = State.IDLE;
     isSelected = false;
     this.config = config;
@@ -59,7 +63,6 @@ public class Unit extends Entity {
     numRemainingMoves = 5;
     board.addUnitAt(x, y, this);
     painter.attach(this);
-    painter.updateReachable(x, y, numRemainingMoves);
   }
 
   @Override
@@ -70,7 +73,10 @@ public class Unit extends Entity {
   
   private void removeTail() {
     if (tail.isEmpty()) {
-      // TODO: delete self
+      board.removeUnitAt(x, y);
+      owner.disown(this);
+      screen.removeEntity(this);
+      return;
     }
     IPoint backOfTail = tail.keySet().iterator().next();
     removeTail(backOfTail.gx(), backOfTail.gy());
@@ -164,6 +170,7 @@ public class Unit extends Entity {
       prevTail.clear();
       prevTail.putAll(tail);
       prev = new IPoint(x,y);
+      painter.updateReachable(x, y, numRemainingMoves);
     } else if (isSelected && state == State.MOVING) {
       state = State.ATTACKING;
       numRemainingMoves = 0;
@@ -195,6 +202,10 @@ public class Unit extends Entity {
 
   public boolean isReachable(int xn, int yn) {
     return painter.getReachable().contains(new IPoint(xn, yn));
+  }
+
+  public void setOwner(Player player) {
+    owner = player;
   }
 }
 

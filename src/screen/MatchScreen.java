@@ -48,8 +48,8 @@ public class MatchScreen extends Screen {
     JSONLoader configLoader = JSONLoader.getLoader();
     Board b = new Board(p, configLoader.loadJSONFromFile("config/test_board.json", BoardConfig.class));
     
-    Unit u1 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
-    Unit u2 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
+    Unit u1 = new Unit(this, b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
+    Unit u2 = new Unit(this, b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
     this.getEntities().add(u2);
     this.getEntities().add(u1);
     

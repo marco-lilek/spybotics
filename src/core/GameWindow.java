@@ -66,6 +66,7 @@ public class GameWindow extends JPanel implements ActionListener {
       game.redraw(bufferGraphics);
       
       Graphics offscreenGraphics = offscreen.getGraphics();
+      offscreenGraphics.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
       for (Iterator<BufferedImage> it = bufferImages.iterator(); it.hasNext(); ) {
         offscreenGraphics.drawImage(it.next(), 0,0, this);
       }

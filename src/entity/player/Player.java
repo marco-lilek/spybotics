@@ -47,6 +47,11 @@ public abstract class Player extends Entity {
 
   public void own(Unit u) {
     units.add(u);
+    u.setOwner(this);
+  }
+
+  public void disown(Unit unit) {
+    units.remove(unit);
   }
 
 }
