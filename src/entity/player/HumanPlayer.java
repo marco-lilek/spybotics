@@ -11,22 +11,16 @@ import entity.painter.CursorPainter;
 import screen.MatchScreen;
 import screen.Screen;
 import util.Canvas;
-import util.communicator.Message;
 
 public class HumanPlayer extends Player {
   
   private final Cursor cursor;
   private final MatchScreen screen;
   
-  public HumanPlayer(Board board, MatchScreen screen, BoardPainter boardPainter, Canvas c) {
-    super(board, screen);
+  public HumanPlayer(MatchScreen screen) {
+    super(screen);
     this.screen = screen;
-    cursor = new Cursor(screen, board, new CursorPainter(boardPainter, c), this);
-  }
-
-  public void handleKeyboardMsg(Message msgFromKeyboard) {
-    if (msgFromKeyboard == Message.KEYBOARD_KEY_A) finishTurn();
-    cursor.handleKeyboardMsg(msgFromKeyboard);
+    cursor = new Cursor(screen);
   }
 
   @Override
@@ -36,8 +30,6 @@ public class HumanPlayer extends Player {
       cursor.redraw(g);
     }
   }
-
-  @Override
-  public void tick() {
-  }
+  
+  public Cursor getCursor() { return cursor; }
 }

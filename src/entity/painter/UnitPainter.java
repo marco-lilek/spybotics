@@ -12,28 +12,29 @@ import java.util.TreeSet;
 
 import config.UnitConfig;
 import entity.Board;
+import screen.MatchScreen;
 import entity.Entity;
+import entity.Unit;
+import entity.Unit.State;
 import entity.player.Player;
-import entity.unit.Unit;
-import entity.unit.Unit.State;
 import util.Canvas;
 import util.IPoint;
 
 public class UnitPainter extends EntityPainter {
 
-  private BoardPainter boardPainter;
-  private Unit unit;
+  private final Unit unit;
   private Set<IPoint> reachableTiles;
   
-  public UnitPainter(BoardPainter boardPainter) {
-    this.boardPainter = boardPainter;
+  public UnitPainter(Unit unit) {
+    this.unit = unit;
     reachableTiles = new TreeSet<IPoint>();
   }
   
   public void redraw(List<Graphics2D> g) {
     Graphics l1 = g.get(1);
     Graphics l2 = g.get(2);
-    Canvas canvas = boardPainter.getTileDrawCanvas(unit.gx(), unit.gy());
+    Board board = ((MatchScreen)unit.getScreen()).getBoard();
+    Canvas canvas = board.getTileDrawCanvas(unit.gx(), unit.gy());
     if (canvas != null) {
       drawTile(l1, canvas);
     }
@@ -41,7 +42,7 @@ public class UnitPainter extends EntityPainter {
     int idx = 0;
     for (Iterator<IPoint> it = unit.getTail().keySet().iterator(); it.hasNext(); idx++) {
       IPoint p = it.next();
-      Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+      Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
       if (drawCanvas != null) {
         drawTailTile(l1, drawCanvas, idx + 1);
       }
@@ -54,7 +55,7 @@ public class UnitPainter extends EntityPainter {
     case MOVING:
       for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
         IPoint p = it.next();
-        Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+        Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
         if (drawCanvas != null) {
           l2.setColor(new Color(12,12,12));
           l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
@@ -65,7 +66,7 @@ public class UnitPainter extends EntityPainter {
     case ATTACKING:
       for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
         IPoint p = it.next();
-        Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+        Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
         if (drawCanvas != null) {
           l2.setColor(new Color(0,255,12));
           l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
@@ -90,21 +91,20 @@ public class UnitPainter extends EntityPainter {
     g.setColor(new Color(0,0,0));
   }
   
-  public void attach(Unit unit) {
-    this.unit = unit;
-  }
-
-  public void updateReachableWhenAttacking(int x, int y, int attackRange) {
-    reachableTiles = boardPainter.getAdjacentTiles(new IPoint(x, y), attackRange, null);
-    System.out.println(reachableTiles);
-  }
-  
-  public void updateReachable(int x, int y, int numRemainingMoves) {
-    reachableTiles = boardPainter.getAdjacentTiles(new IPoint(x, y), numRemainingMoves, unit);
-  }
-  
   public Set<IPoint> getReachable() {
     return reachableTiles;
+  }
+
+  @Override
+  public void update() {
+    switch (unit.getState()) {
+    case MOVING:
+      reachableTiles = ((MatchScreen)unit.getScreen()).getBoard().getAdjacentTiles(new IPoint(unit.gx(), unit.gy()), unit.getRemainingMoves(), unit);
+      break;
+    case ATTACKING:
+      reachableTiles = ((MatchScreen)unit.getScreen()).getBoard().getAdjacentTiles(new IPoint(unit.gx(), unit.gy()), unit.getAttackRange(), null);
+      break;
+    }
   }
 }
 

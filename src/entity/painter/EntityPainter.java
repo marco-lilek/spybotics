@@ -9,5 +9,5 @@ import entity.Entity;
 public abstract class EntityPainter {
 
   public abstract void redraw(List<Graphics2D> g);
-
+  public abstract void update();
 }

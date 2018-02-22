@@ -10,25 +10,19 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import core.Game;
+import entity.Board;
 import entity.Entity;
 import util.communicator.CallbackListener;
 import util.communicator.CallbackNotifier;
 import util.communicator.Communicator;
-import util.communicator.Message;
+import util.communicator.KeyboardMessage;
 
-public abstract class Screen extends Communicator {
+public abstract class Screen {
   
   private ArrayList<Entity> entities;
   
-  Screen(Game game) {
-    addListener(game.getName(), game);
+  Screen() {
     entities = new ArrayList<Entity>();
-  }
-  
-  public void tick() {
-    for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
-      it.next().tick();
-    }
   }
   
   public void redraw(List<Graphics2D> g) {
@@ -37,11 +31,18 @@ public abstract class Screen extends Communicator {
     }
   }
 
+  public void addEntity(Entity e) {
+    entities.add(e);
+  }
+  
+  public void removeEntity(Entity e) {
+    entities.remove(e);
+  }
+  
   protected ArrayList<Entity> getEntities() {
     return entities;
   }
 
-  public void removeEntity(Entity e) {
-    entities.remove(e);
-  }
+  abstract public void handleInput(KeyboardMessage msg);
+
 }

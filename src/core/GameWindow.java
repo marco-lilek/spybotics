@@ -79,6 +79,8 @@ public class GameWindow extends JPanel implements ActionListener {
     super();
     keyboardManager = new KeyboardManager(this.getInputMap(), this.getActionMap());
     game = new Game(keyboardManager);
+    game.getGlobalConfig().put("SCREEN_WIDTH", SCREEN_WIDTH);
+    game.getGlobalConfig().put("SCREEN_HEIIGHT", SCREEN_HEIGHT);
   }
   
   public void init() {
@@ -110,7 +112,6 @@ public class GameWindow extends JPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    game.tick();
     this.repaint();
   }
 }

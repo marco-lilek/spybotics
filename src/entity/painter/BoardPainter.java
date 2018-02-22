@@ -11,24 +11,27 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import entity.Board;
-import entity.unit.Unit;
+import entity.Entity;
+import entity.Unit;
 import util.IPoint;
 
 public class BoardPainter extends EntityPainter {
+  private static final int BOARD_XOFFSET = 270;
+  private static final int BOARD_YOFFSET = 30;
+  private static final int BOARD_WIDTH = BoardPainter.getFullTileSize() * 14;
+  private static final int BOARD_HEIGHT = BoardPainter.getFullTileSize() * 11;
+  
   private static final int TILEW = 32;
   private static final int TILESPACE = 4;
   
   private final Canvas drawCanvas;
-  private Board board;
+  private final Board board;
   private int canvasWidthTiles, canvasHeightTiles;
   
-  public BoardPainter(Canvas availCanvasFromScreen) {
-    this.drawCanvas = availCanvasFromScreen;
-  }
-  
-  public void attach(Board board) {
+  public BoardPainter(Board board) {
     this.board = board;
-    System.out.println(board.getConfig());
+    this.drawCanvas = new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT));
+    
     IPoint boardDimensions = drawCanvas.dimensions;
     canvasWidthTiles = Math.min(board.getConfig().getWidthTiles(), boardDimensions.gx() / getFullTileSize());
     canvasHeightTiles = Math.min(board.getConfig().getHeightTiles(), boardDimensions.gy() / getFullTileSize());
@@ -37,7 +40,6 @@ public class BoardPainter extends EntityPainter {
     int totalHeightTiles = board.getConfig().getHeightTiles();
     if (totalWidthTiles != canvasWidthTiles) throw new IllegalArgumentException("canvas width " + String.valueOf(canvasWidthTiles) + " " + String.valueOf(totalWidthTiles));
     if (totalHeightTiles != canvasHeightTiles) throw new IllegalArgumentException("canvas height " + String.valueOf(canvasHeightTiles) + " " + String.valueOf(totalHeightTiles));
-    
   }
   
   public static int getFullTileSize() {
@@ -90,33 +92,11 @@ public class BoardPainter extends EntityPainter {
   public Canvas getTilesCanvas() {
     return new Canvas(new IPoint(0, 0), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
   }
-  
-  public Set<IPoint> getAdjacentTiles(IPoint tile, int distance, Unit unit) {
-    Set<IPoint> adjTiles = new TreeSet<IPoint>();
-    adjTiles.add(tile);
-    for (int i = 0; i < distance; i++) {
-      Set<IPoint> newEntries = new TreeSet<IPoint>();
-      for (Iterator<IPoint> rti = adjTiles.iterator(); rti.hasNext();) {
-        IPoint reachableTile = rti.next();
-        newEntries.addAll(getAdjacentTiles(reachableTile, unit));
-      }
-      adjTiles.addAll(newEntries);
-    }
-    return adjTiles;
-  }
-  
-  private Set<IPoint> getAdjacentTiles(IPoint tile, Unit unit) {
-    Set<IPoint>toRet = new TreeSet<IPoint>();
-    int tx = tile.gx(), ty = tile.gy();
-    int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
-    for (int[] move : moves) {
-      int xn = tx + move[0], yn = ty + move[1];
-      if ((unit == null && board.isOpenAt(xn, yn)) || 
-          (unit != null && board.isOpenAt(xn, yn) && (board.getUnitAt(xn, yn) == unit || board.getUnitAt(xn, yn) == null))) {
-        toRet.add(new IPoint(xn, yn));
-      }
-    }
-    return toRet;
+
+  @Override
+  public void update() {
+    // TODO Auto-generated method stub
+    
   }
 }
 

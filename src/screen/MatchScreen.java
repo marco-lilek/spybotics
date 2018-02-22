@@ -1,7 +1,7 @@
 package screen;
 
 import java.awt.Graphics;
-import java.awt.List;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -14,83 +14,133 @@ import core.sprite.SpriteManager;
 import entity.Board;
 import entity.Cursor;
 import entity.Entity;
-import entity.UnitInfo;
+import entity.Unit;
+import entity.Unit.State;
 import entity.painter.BoardPainter;
 import entity.painter.CursorPainter;
 import entity.painter.UnitPainter;
 import entity.player.AIPlayer;
 import entity.player.HumanPlayer;
 import entity.player.Player;
-import entity.unit.Unit;
 import util.Canvas;
 import util.IPoint;
 import util.JSONLoader;
 import util.communicator.Communicator;
-import util.communicator.Message;
-import util.communicator.Message.MsgTypes;
+import util.communicator.KeyboardMessage;
 
 public class MatchScreen extends Screen {
-
-  private static final int BOARD_XOFFSET = 270;
-  private static final int BOARD_YOFFSET = 30;
-  private static final int BOARD_WIDTH = BoardPainter.getFullTileSize() * 14;
-  private static final int BOARD_HEIGHT = BoardPainter.getFullTileSize() * 11;
   
-  private static final int UNITINFO_XOFFSET = 30;
+/*  private static final int UNITINFO_XOFFSET = 30;
   private static final int UNITINFO_YOFFSET = 30;
   private static final int UNITINFO_WIDTH = 210;
   private static final int UNITINFO_HEIGHT = 200;
-  
-  private final String gameName;
-  private final AbstractList<Player> players;
+  */
+  private Board board;
+  private List<Player> players;
   private int activePlayer;
   
-  MatchScreen(Game game) {
-    super(game);
-    game.addListener(getName(), this);
-    gameName = game.getName();
-    BoardPainter p = new BoardPainter(new Canvas(new IPoint(BOARD_XOFFSET, BOARD_YOFFSET), new IPoint(BOARD_WIDTH, BOARD_HEIGHT)));
-    
-    JSONLoader configLoader = JSONLoader.getLoader();
-    Board b = new Board(p, configLoader.loadJSONFromFile("config/test_board.json", BoardConfig.class));
-    
-    Unit u1 = new Unit(this, b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
-    Unit u2 = new Unit(this, b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
-    this.getEntities().add(u2);
-    this.getEntities().add(u1);
-    this.getEntities().add(b);
-    
+  MatchScreen() {
     activePlayer = 0;
+    JSONLoader configLoader = JSONLoader.getLoader();
+    Player p1 = new HumanPlayer(this);
+    Player p2 = new HumanPlayer(this);
     players = new ArrayList<Player>();
-    players.add(new HumanPlayer(b, this, p, new Canvas(new IPoint(UNITINFO_XOFFSET, UNITINFO_YOFFSET), new IPoint(UNITINFO_WIDTH, UNITINFO_HEIGHT))));
-    players.add(new HumanPlayer(b, this, p, new Canvas(new IPoint(UNITINFO_XOFFSET, UNITINFO_YOFFSET), new IPoint(UNITINFO_WIDTH, UNITINFO_HEIGHT))));
-    for (Player player : players) {
-      this.getEntities().add(player);
-    }
+    players.add(p1);
+    players.add(p2);
     
-    players.get(0).own(u1);
-    players.get(1).own(u2);
-  }
-
-  @Override
-  public void callbackRecv(Message msg) {
-    if (msg == Message.PLAYER_TURN_COMPLETE) {
-      activePlayer  = (1 + activePlayer) % players.size();
-    }
-    
-    if (msg.is(MsgTypes.KEYBOARD)) {
-      players.get(activePlayer).handleKeyboardMsg(msg);
-    }
-  }
-  
-  @Override
-  public String getName() {
-    // TODO Auto-generated method stub
-    return "MatchScreen";
+    board = new Board(this, configLoader.loadJSONFromFile("config/test_board.json", BoardConfig.class));
+    Unit u1 = new Unit(this, configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
+    Unit u2 = new Unit(this, configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
+    p1.own(u1);
+    p2.own(u2);
   }
   
   public Player whosTurn() {
     return players.get(activePlayer);
+  }
+
+  @Override
+  public void handleInput(KeyboardMessage msg) {
+    HumanPlayer player = (HumanPlayer) players.get(activePlayer);
+    Cursor activeCursor = player.getCursor(); // assuming both players are human for now
+    int x = activeCursor.gx(); int y = activeCursor.gy();
+    
+    Unit selectedUnit = activeCursor.getSelectedUnit();
+    Unit unitAt = board.getUnitAt(activeCursor.gx(), activeCursor.gy());
+    
+    int xd=0,yd=0;
+    switch (msg) {
+    case KEYBOARD_KEY_LEFT:
+      xd = -1;
+      break;
+    case KEYBOARD_KEY_RIGHT:
+      xd = 1;
+      break;
+    case KEYBOARD_KEY_UP:
+      yd = -1;
+      break;
+    case KEYBOARD_KEY_DOWN:
+      yd = 1;
+      break;
+    case KEYBOARD_KEY_SPACE:
+      if (selectedUnit != null) {
+        Unit.State unitState = selectedUnit.getState();
+        switch (unitState) {
+        case MOVING:
+          selectedUnit.flipSelected(); // TODO
+          activeCursor.setSelectedUnit(null);
+          break;
+        case ATTACKING:
+          if (selectedUnit != null && unitAt == selectedUnit) {
+            selectedUnit.flipSelected(); // TODO
+            activeCursor.setSelectedUnit(null);
+            break;
+          }
+          if (unitAt != null && !player.getUnits().contains(unitAt)) {
+            selectedUnit.attack(unitAt);
+          }
+          break;
+        }
+      } else if (unitAt != null && player.getUnits().contains(unitAt)) {
+        activeCursor.setSelectedUnit(unitAt);
+        unitAt.flipSelected();
+      }
+
+      return;
+    case KEYBOARD_KEY_U:
+      if (selectedUnit != null) {
+        IPoint prev = selectedUnit.undoMove();
+        if (prev != null) {
+          activeCursor.setPos(prev.gx(), prev.gy());
+        }
+      }
+      return;
+    case KEYBOARD_KEY_1:
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+        selectedUnit.setActiveAttack(0);
+      }
+      return;
+    case KEYBOARD_KEY_2:
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+        selectedUnit.setActiveAttack(1);
+      }
+      return;
+    default:
+      break;
+    }
+    
+    if (selectedUnit != null && selectedUnit.getState() == Unit.State.MOVING && !selectedUnit.move(xd, yd)) {
+      return;
+    }
+    if (selectedUnit != null && selectedUnit.getState() == Unit.State.ATTACKING && !selectedUnit.isReachable(x+xd, y+yd)) {
+      return;
+    }
+    
+    activeCursor.move(xd, yd);
+  }
+  
+  public Board getBoard() {
+    return board;
   }
   
 

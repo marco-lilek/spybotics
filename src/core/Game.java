@@ -20,43 +20,29 @@ import screen.Screen;
 import screen.ScreenFactory;
 import util.communicator.CallbackListener;
 import util.communicator.Communicator;
-import util.communicator.Message;
+import util.communicator.KeyboardMessage;
 
-public class Game extends Communicator {
+public class Game implements CallbackListener<KeyboardMessage> {
 
-  private Map<String, String> globalGameConfig;
+  private Map<String, Integer> globalGameConfig;
   private Screen activeScreen;
   
   Game(KeyboardManager keyboardManager) {
-    keyboardManager.addListener(getName(), this);
-    globalGameConfig = new HashMap<String, String>();
-    activeScreen = ScreenFactory.getScreen(Message.GAME_SCREEN_MATCH, this);
+    keyboardManager.addListener("Game", this);
+    globalGameConfig = new HashMap<String, Integer>();
+    activeScreen = ScreenFactory.getScreen();
   }
 
   public void redraw(List<Graphics2D> gl) {
     activeScreen.redraw(gl);
   }
-  
-  public void tick() {
-    activeScreen.tick();
-/*    ScreenType nextScreenType = activeScreen.tick();
-    if (nextScreenType != activeScreen.getType()) {
-      // Transition to a new screen, deletes all entities in the active screen
-      ;
-    }*/
-  }
 
   @Override
-  public void callbackRecv(Message msg) {
-    if (msg.is(Message.MsgTypes.KEYBOARD)) {
-      notifyListener(activeScreen.getName(), msg);
-    } else if (msg.is(Message.MsgTypes.GAME_SCREEN)) {
-      activeScreen = ScreenFactory.getScreen(msg, this);
-    }
+  public void callbackRecv(KeyboardMessage msg) {
+    activeScreen.handleInput(msg);
   }
-  
-  @Override
-  public String getName() {
-    return "Game";
+
+  public Map<String, Integer> getGlobalConfig() {
+    return globalGameConfig;
   }
 }

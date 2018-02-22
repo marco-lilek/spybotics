@@ -5,21 +5,58 @@ import java.awt.Graphics2D;
 import java.util.List;
 
 import core.Game;
+import entity.Unit.State;
 import entity.painter.CursorPainter;
 import entity.player.Player;
-import entity.unit.Unit;
-import entity.unit.Unit.State;
+import screen.MatchScreen;
 import screen.Screen;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
-import util.communicator.Message;
 
 public class Cursor extends Entity {
 
-  private int x,y;
-  private final Board board;
+  private final CursorPainter painter;
   private Unit selectedUnit;
+  private int x,y;
+  
+  public Cursor(MatchScreen screen) {
+    super(screen);
+    this.painter = new CursorPainter(this);
+    x = 0; y = 0;
+  }
+
+  public int gx() {return x;}
+  public int gy() {return y;}
+  
+  @Override
+  public void redraw(List<Graphics2D> g) {
+    painter.redraw(g);
+  }
+  
+  public Unit getSelectedUnit() { return selectedUnit; }
+  public void setSelectedUnit(Unit u) { selectedUnit = u; }
+
+  public void move(int xd, int yd) {
+    MatchScreen screen = (MatchScreen)this.getScreen();
+    int xn = x + xd;
+    int yn = y + yd;
+    if (!screen.getBoard().isInBounds(xn, yn)) {
+      return;
+    }
+    x = xn;
+    y = yn;
+  }
+
+  public void setPos(int gx, int gy) {
+    x = gx;
+    y = gy;
+  }
+  
+/*
+  
+  private final Board board;
+  
   private final Player player;
   private final CursorPainter painter;
   
@@ -40,7 +77,7 @@ public class Cursor extends Entity {
     y = yn;
   }
 
-/*  public void handleKeyStroke(Key key) {
+  public void handleKeyStroke(Key key) {
     int xd=0,yd=0;
     switch (key) {
     case LEFT:
@@ -70,7 +107,7 @@ public class Cursor extends Entity {
       unitUnderControl.move(xd, yd);
     }
   }
-*/
+
   public int gx() {
     return x;
   }
@@ -161,5 +198,5 @@ public class Cursor extends Entity {
   @Override
   public void redraw(List<Graphics2D> g) {
     painter.redraw(g);
-  }
+  }*/
 }

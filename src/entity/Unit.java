@@ -1,4 +1,4 @@
-package entity.unit;
+package entity;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,16 +13,15 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import config.UnitConfig;
-import entity.Board;
-import entity.Entity;
+import entity.Unit.State;
 import entity.painter.UnitPainter;
 import entity.player.Player;
-import entity.unit.Unit.State;
+import screen.MatchScreen;
 import screen.Screen;
+import entity.Board;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
-import util.communicator.Message;
 
 public class Unit extends Entity {
 
@@ -33,49 +32,43 @@ public class Unit extends Entity {
     DONE
   }
   
+  private final UnitConfig config;
+  private final MatchScreen screen;
+  private final UnitPainter painter;
+  
   private State state;
   private boolean isSelected;
-  private final UnitConfig config;
-  private int activeAttack;
+  private int selectedAttack;
   private int numRemainingMoves;
   private int x,y;
-  private final Board board;
-  private final UnitPainter painter;
   private Player owner;
-  private final Screen screen;
   
   private IPoint prev;
   private Map<IPoint,Boolean> prevTail;
   
   private Map<IPoint,Boolean> tail;
   
-  public Unit(Screen screen, Board board, UnitPainter painter, UnitConfig config, int x, int y) {
-    activeAttack = 0;
+  public Unit(MatchScreen screen, UnitConfig config, int x, int y) {
+    super(screen);
+    this.config = config;
     this.screen = screen;
+    this.painter = new UnitPainter(this);
+    
     state = State.IDLE;
     isSelected = false;
-    this.config = config;
+    selectedAttack = 0;
     this.x = x;
     this.y = y;
-    this.board = board;
-    this.painter = painter;
     tail = new LinkedHashMap<IPoint,Boolean>();
     prevTail = new LinkedHashMap<IPoint,Boolean>();
     
     numRemainingMoves = 5;
-    board.addUnitAt(x, y, this);
-    painter.attach(this);
-  }
-
-  @Override
-  public void tick() {
-    // TODO Auto-generated method stub
-    
+    screen.getBoard().addUnitAt(x, y, this);
   }
   
   private void removeTail() {
     if (tail.isEmpty()) {
-      board.removeUnitAt(x, y);
+      screen.getBoard().removeUnitAt(x, y);
       owner.disown(this);
       screen.removeEntity(this);
       return;
@@ -86,12 +79,12 @@ public class Unit extends Entity {
   
   private void removeTail(int x, int y) {
     tail.remove(new IPoint(x, y));
-    board.removeUnitAt(x, y);
+    screen.getBoard().removeUnitAt(x, y);
   }
   
   private void addTail(int x, int y) {
     tail.put(new IPoint(x, y), true);
-    board.addUnitAt(x, y, this);
+    screen.getBoard().addUnitAt(x, y, this);
   }
   
   public boolean move(int xd, int yd) {
@@ -99,8 +92,8 @@ public class Unit extends Entity {
     
     int xn = x + xd;
     int yn = y + yd;
-    Unit unitAtN = board.getUnitAt(xn, yn);
-    if (!board.isOpenAt(xn, yn) || (unitAtN != this && unitAtN != null)) {
+    Unit unitAtN = screen.getBoard().getUnitAt(xn, yn);
+    if (!screen.getBoard().isOpenAt(xn, yn) || (unitAtN != this && unitAtN != null)) {
       return false;
     }
     
@@ -109,12 +102,13 @@ public class Unit extends Entity {
       removeTail();
     }
     tail.remove(new IPoint(xn, yn));
-    board.addUnitAt(xn, yn, this);
+    screen.getBoard().addUnitAt(xn, yn, this);
     
     x = xn;
     y = yn;
     System.out.println(new IPoint(x, y));
-    painter.updateReachable(xn, yn, --numRemainingMoves);
+    numRemainingMoves--;
+    painter.update();
     return true;
   }
 
@@ -123,22 +117,22 @@ public class Unit extends Entity {
     
     for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext();) {
       IPoint p = it.next();
-      board.removeUnitAt(p.gx(), p.gy());
+      screen.getBoard().removeUnitAt(p.gx(), p.gy());
     }
     
     for (Iterator<IPoint> it = prevTail.keySet().iterator(); it.hasNext();) {
       IPoint p = it.next();
-      board.addUnitAt(p.gx(),p.gy(), this);
+      screen.getBoard().addUnitAt(p.gx(),p.gy(), this);
     }
     
     tail.clear();
     tail.putAll(prevTail);
-    board.removeUnitAt(x, y);
+    screen.getBoard().removeUnitAt(x, y);
     x = prev.gx();
     y = prev.gy();
-    board.addUnitAt(x, y, this);
+    screen.getBoard().addUnitAt(x, y, this);
     numRemainingMoves = 5;
-    painter.updateReachable(x, y, numRemainingMoves); // TODO: initial remaining moves
+    painter.update(); // TODO: initial remaining moves
     
     return prev;
   }
@@ -160,11 +154,6 @@ public class Unit extends Entity {
   public UnitConfig getConfig() {
     return config;
   }
-
-  @Override
-  public void redraw(List<Graphics2D> g) {
-    painter.redraw(g);
-  }
   
   public void flipSelected() {
     if (!isSelected && state == State.IDLE) {
@@ -172,17 +161,17 @@ public class Unit extends Entity {
       prevTail.clear();
       prevTail.putAll(tail);
       prev = new IPoint(x,y);
-      painter.updateReachable(x, y, numRemainingMoves);
+      painter.update();
     } else if (isSelected) {
       switch (state) {
       case MOVING:
         state = State.ATTACKING;
         numRemainingMoves = 0;
-        painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
+        painter.update();
         break;
       case ATTACKING:
         state = State.DONE;
-        painter.updateReachable(x, y, 0);
+        painter.update();
         break;
       }
       
@@ -200,11 +189,11 @@ public class Unit extends Entity {
   }
 
   public void attack(Unit other) {
-    board.attack(other, config.attacks.get(activeAttack).damage);
+    screen.getBoard().attack(other, config.attacks.get(selectedAttack).damage);
     flipSelected();
     state = State.DONE;
     numRemainingMoves = 0;
-    painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
+    painter.update();
   }
   
   public void damage(int amount) {
@@ -224,10 +213,23 @@ public class Unit extends Entity {
   public void setActiveAttack(int attackId) {
     System.out.println(config.attacks);
     if (attackId >= 0 && attackId < config.attacks.size()) {
-      activeAttack = attackId;
+      selectedAttack = attackId;
     }
     numRemainingMoves = 0;
-    painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
+    painter.update();
+  }
+
+  public int getRemainingMoves() {
+    return numRemainingMoves;
+  }
+
+  public int getAttackRange() {
+    return config.attacks.get(selectedAttack).range;
+  }
+
+  @Override
+  public void redraw(List<Graphics2D> g) {
+    painter.redraw(g);
   }
 }
 

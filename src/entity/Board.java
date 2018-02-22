@@ -14,11 +14,10 @@ import java.util.TreeSet;
 
 import config.BoardConfig;
 import entity.painter.BoardPainter;
-import entity.unit.Unit;
+import screen.MatchScreen;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
-import util.communicator.Message;
 
 public class Board extends Entity {
 
@@ -27,10 +26,10 @@ public class Board extends Entity {
   private boolean floorTiles[][]; // TODO: make sure its a bitarray
   private Unit unitAtTiles[][];
   
-  public Board(BoardPainter painter, BoardConfig config) {
+  public Board(MatchScreen screen, BoardConfig config) {
+    super(screen);
     this.config = config;
-    this.painter = painter;
-    painter.attach(this);
+    this.painter = new BoardPainter(this);
     this.floorTiles = config.getFloorTiles();
     unitAtTiles = new Unit[config.getWidthTiles()][config.getHeightTiles()];
   }
@@ -39,11 +38,9 @@ public class Board extends Entity {
     return config;
   }
 
-
   public boolean hasFloorTileAt(int i, int j) {
     return floorTiles[i][j];
   }
-
 
   public boolean isInBounds(int x, int y) {
     return !(x < 0 || x >=  config.getWidthTiles() || y < 0 || y >= config.getHeightTiles());
@@ -67,12 +64,6 @@ public class Board extends Entity {
     this.unitAtTiles[x][y] = null;
   }
   
-  @Override
-  public void tick() {
-    // TODO Auto-generated method stub
-    
-  }
-  
   public void attack(Unit other, int damage) {
     other.damage(damage);
   }
@@ -82,6 +73,37 @@ public class Board extends Entity {
     painter.redraw(g);
   }
   
+  public Canvas getTileDrawCanvas(int x, int y) {
+    return painter.getTileDrawCanvas(x, y);
+  }
+  
+  public Set<IPoint> getAdjacentTiles(IPoint tile, int distance, Unit unit) {
+    Set<IPoint> adjTiles = new TreeSet<IPoint>();
+    adjTiles.add(tile);
+    for (int i = 0; i < distance; i++) {
+      Set<IPoint> newEntries = new TreeSet<IPoint>();
+      for (Iterator<IPoint> rti = adjTiles.iterator(); rti.hasNext();) {
+        IPoint reachableTile = rti.next();
+        newEntries.addAll(getAdjacentTiles(reachableTile, unit));
+      }
+      adjTiles.addAll(newEntries);
+    }
+    return adjTiles;
+  }
+  
+  private Set<IPoint> getAdjacentTiles(IPoint tile, Unit unit) {
+    Set<IPoint>toRet = new TreeSet<IPoint>();
+    int tx = tile.gx(), ty = tile.gy();
+    int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
+    for (int[] move : moves) {
+      int xn = tx + move[0], yn = ty + move[1];
+      if ((unit == null && isOpenAt(xn, yn)) || 
+          (unit != null && isOpenAt(xn, yn) && (getUnitAt(xn, yn) == unit || getUnitAt(xn, yn) == null))) {
+        toRet.add(new IPoint(xn, yn));
+      }
+    }
+    return toRet;
+  }
 /*
   @Override
   public void redraw(Graphics g) {

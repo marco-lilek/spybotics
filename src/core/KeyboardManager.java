@@ -12,14 +12,15 @@ import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
 import util.communicator.CallbackNotifier;
-import util.communicator.Message;
+import util.communicator.KeyboardMessage;
 
-public class KeyboardManager extends CallbackNotifier<Message> {
+public class KeyboardManager extends CallbackNotifier<KeyboardMessage> {
   class ForwardMsgToListenerAction extends AbstractAction {
-    
-    private Message msg;
+
+    private static final long serialVersionUID = 1L;
+    private KeyboardMessage msg;
     private KeyboardManager km;
-    ForwardMsgToListenerAction(Message msg, KeyboardManager km) {
+    ForwardMsgToListenerAction(KeyboardMessage msg, KeyboardManager km) {
       this.msg = msg;
       this.km = km;
     }
@@ -30,26 +31,26 @@ public class KeyboardManager extends CallbackNotifier<Message> {
   }
   
   // TODO: cons of maybe needing to double each entry for key up might outweigh pros of having enum
-  private static final Map<String, Message> keyStrokeMsgMap;
+  private static final Map<String, KeyboardMessage> keyStrokeMsgMap;
   static {
-    keyStrokeMsgMap = new HashMap<String, Message>();
-    keyStrokeMsgMap.put("SPACE", Message.KEYBOARD_KEY_SPACE);
-    keyStrokeMsgMap.put("LEFT", Message.KEYBOARD_KEY_LEFT);
-    keyStrokeMsgMap.put("RIGHT", Message.KEYBOARD_KEY_RIGHT);
-    keyStrokeMsgMap.put("UP", Message.KEYBOARD_KEY_UP);
-    keyStrokeMsgMap.put("DOWN", Message.KEYBOARD_KEY_DOWN);
+    keyStrokeMsgMap = new HashMap<String, KeyboardMessage>();
+    keyStrokeMsgMap.put("SPACE", KeyboardMessage.KEYBOARD_KEY_SPACE);
+    keyStrokeMsgMap.put("LEFT", KeyboardMessage.KEYBOARD_KEY_LEFT);
+    keyStrokeMsgMap.put("RIGHT", KeyboardMessage.KEYBOARD_KEY_RIGHT);
+    keyStrokeMsgMap.put("UP", KeyboardMessage.KEYBOARD_KEY_UP);
+    keyStrokeMsgMap.put("DOWN", KeyboardMessage.KEYBOARD_KEY_DOWN);
     //keyStrokeMsgMap.put("typed e", Key.E);
-    keyStrokeMsgMap.put("typed e", Message.KEYBOARD_KEY_E);
-    keyStrokeMsgMap.put("typed a", Message.KEYBOARD_KEY_A);
-    keyStrokeMsgMap.put("typed u", Message.KEYBOARD_KEY_U);
-    keyStrokeMsgMap.put("typed 1", Message.KEYBOARD_KEY_1);
-    keyStrokeMsgMap.put("typed 2", Message.KEYBOARD_KEY_2);
+    keyStrokeMsgMap.put("typed e", KeyboardMessage.KEYBOARD_KEY_E);
+    keyStrokeMsgMap.put("typed a", KeyboardMessage.KEYBOARD_KEY_A);
+    keyStrokeMsgMap.put("typed u", KeyboardMessage.KEYBOARD_KEY_U);
+    keyStrokeMsgMap.put("typed 1", KeyboardMessage.KEYBOARD_KEY_1);
+    keyStrokeMsgMap.put("typed 2", KeyboardMessage.KEYBOARD_KEY_2);
   }
   
   
   public KeyboardManager(InputMap inputMap, ActionMap actionMap) {
-    for (Iterator<Map.Entry<String, Message>> entryIter = keyStrokeMsgMap.entrySet().iterator(); entryIter.hasNext();) {
-      Map.Entry<String, Message> entry =  entryIter.next();
+    for (Iterator<Map.Entry<String, KeyboardMessage>> entryIter = keyStrokeMsgMap.entrySet().iterator(); entryIter.hasNext();) {
+      Map.Entry<String, KeyboardMessage> entry =  entryIter.next();
       inputMap.put(KeyStroke.getKeyStroke(entry.getKey()), entry.getKey());
       actionMap.put(entry.getKey(), new ForwardMsgToListenerAction(entry.getValue(), this));
     }

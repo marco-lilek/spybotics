@@ -12,16 +12,11 @@ import entity.Entity;
 import entity.particle.FireworksEmitter;
 import entity.particle.Particle;
 import entity.particle.ParticleDrawer;
-import util.communicator.Message;
+import util.communicator.KeyboardMessage;
 
 public class TestScreen extends Screen {
-  
-  private final String gameName;
-  
-  TestScreen(Game game) {
-    super(game);
-    gameName = game.getName();
-    game.addListener(getName(), this);
+ 
+  TestScreen() {
 /*    entities = new TreeSet<Entity>();
     entities.add(new FireworksEmitter(200,200,50, 2, 60, 0, 2, new ParticleDrawer() {
       private int w = 5;
@@ -31,17 +26,10 @@ public class TestScreen extends Screen {
       }
     }));*/
   }
-
+  
   @Override
-  public void callbackRecv(Message msg) {
-    if (msg == Message.KEYBOARD_KEY_SPACE) {
-      notifyListener(gameName, Message.GAME_SCREEN_MATCH);
-    }
-  }
-
-  @Override
-  public String getName() {
+  public void handleInput(KeyboardMessage msg) {
     // TODO Auto-generated method stub
-    return "TestScreen";
+    
   }
 }
