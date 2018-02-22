@@ -8,6 +8,7 @@ import core.Game;
 import entity.painter.CursorPainter;
 import entity.player.Player;
 import entity.unit.Unit;
+import entity.unit.Unit.State;
 import screen.Screen;
 import util.Canvas;
 import util.Direction;
@@ -104,7 +105,7 @@ public class Cursor extends Entity {
           selectedUnit = null;
           break;
         case ATTACKING:
-          if (unitAt == selectedUnit && selectedUnit != null) {
+          if (selectedUnit != null && unitAt == selectedUnit) {
             selectedUnit.flipSelected(); // TODO
             selectedUnit = null;
             break;
@@ -126,6 +127,16 @@ public class Cursor extends Entity {
         if (prev != null) {
           x = prev.gx(); y = prev.gy();
         }
+      }
+      return;
+    case KEYBOARD_KEY_1:
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+        selectedUnit.setActiveAttack(0);
+      }
+      return;
+    case KEYBOARD_KEY_2:
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+        selectedUnit.setActiveAttack(1);
       }
       return;
     default:

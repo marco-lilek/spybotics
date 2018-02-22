@@ -10,6 +10,7 @@ import entity.painter.BoardPainter;
 import entity.painter.CursorPainter;
 import screen.MatchScreen;
 import screen.Screen;
+import util.Canvas;
 import util.communicator.Message;
 
 public class HumanPlayer extends Player {
@@ -17,10 +18,10 @@ public class HumanPlayer extends Player {
   private final Cursor cursor;
   private final MatchScreen screen;
   
-  public HumanPlayer(Board board, MatchScreen screen, BoardPainter boardPainter) {
+  public HumanPlayer(Board board, MatchScreen screen, BoardPainter boardPainter, Canvas c) {
     super(board, screen);
     this.screen = screen;
-    cursor = new Cursor(screen, board, new CursorPainter(boardPainter), this);
+    cursor = new Cursor(screen, board, new CursorPainter(boardPainter, c), this);
   }
 
   public void handleKeyboardMsg(Message msgFromKeyboard) {

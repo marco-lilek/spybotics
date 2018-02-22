@@ -34,7 +34,6 @@ public class Game extends Communicator {
   }
 
   public void redraw(List<Graphics2D> gl) {
-    
     activeScreen.redraw(gl);
   }
   

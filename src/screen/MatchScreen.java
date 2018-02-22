@@ -14,6 +14,7 @@ import core.sprite.SpriteManager;
 import entity.Board;
 import entity.Cursor;
 import entity.Entity;
+import entity.UnitInfo;
 import entity.painter.BoardPainter;
 import entity.painter.CursorPainter;
 import entity.painter.UnitPainter;
@@ -35,6 +36,11 @@ public class MatchScreen extends Screen {
   private static final int BOARD_WIDTH = BoardPainter.getFullTileSize() * 14;
   private static final int BOARD_HEIGHT = BoardPainter.getFullTileSize() * 11;
   
+  private static final int UNITINFO_XOFFSET = 30;
+  private static final int UNITINFO_YOFFSET = 30;
+  private static final int UNITINFO_WIDTH = 210;
+  private static final int UNITINFO_HEIGHT = 200;
+  
   private final String gameName;
   private final AbstractList<Player> players;
   private int activePlayer;
@@ -52,13 +58,12 @@ public class MatchScreen extends Screen {
     Unit u2 = new Unit(this, b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
     this.getEntities().add(u2);
     this.getEntities().add(u1);
-    
     this.getEntities().add(b);
     
     activePlayer = 0;
     players = new ArrayList<Player>();
-    players.add(new HumanPlayer(b, this, p));
-    players.add(new HumanPlayer(b, this, p));
+    players.add(new HumanPlayer(b, this, p, new Canvas(new IPoint(UNITINFO_XOFFSET, UNITINFO_YOFFSET), new IPoint(UNITINFO_WIDTH, UNITINFO_HEIGHT))));
+    players.add(new HumanPlayer(b, this, p, new Canvas(new IPoint(UNITINFO_XOFFSET, UNITINFO_YOFFSET), new IPoint(UNITINFO_WIDTH, UNITINFO_HEIGHT))));
     for (Player player : players) {
       this.getEntities().add(player);
     }

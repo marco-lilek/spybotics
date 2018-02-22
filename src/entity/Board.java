@@ -73,8 +73,8 @@ public class Board extends Entity {
     
   }
   
-  public void attack(Unit other) {
-    other.damage(3);
+  public void attack(Unit other, int damage) {
+    other.damage(damage);
   }
 
   @Override

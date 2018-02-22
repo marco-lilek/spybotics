@@ -36,6 +36,7 @@ public class Unit extends Entity {
   private State state;
   private boolean isSelected;
   private final UnitConfig config;
+  private int activeAttack;
   private int numRemainingMoves;
   private int x,y;
   private final Board board;
@@ -49,6 +50,7 @@ public class Unit extends Entity {
   private Map<IPoint,Boolean> tail;
   
   public Unit(Screen screen, Board board, UnitPainter painter, UnitConfig config, int x, int y) {
+    activeAttack = 0;
     this.screen = screen;
     state = State.IDLE;
     isSelected = false;
@@ -171,11 +173,20 @@ public class Unit extends Entity {
       prevTail.putAll(tail);
       prev = new IPoint(x,y);
       painter.updateReachable(x, y, numRemainingMoves);
-    } else if (isSelected && state == State.MOVING) {
-      state = State.ATTACKING;
-      numRemainingMoves = 0;
-      painter.updateReachableWhenAttacking(x, y, 2);
-    }
+    } else if (isSelected) {
+      switch (state) {
+      case MOVING:
+        state = State.ATTACKING;
+        numRemainingMoves = 0;
+        painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
+        break;
+      case ATTACKING:
+        state = State.DONE;
+        painter.updateReachable(x, y, 0);
+        break;
+      }
+      
+    } 
     
     isSelected = !isSelected;
   }
@@ -189,9 +200,11 @@ public class Unit extends Entity {
   }
 
   public void attack(Unit other) {
-    board.attack(other);
+    board.attack(other, config.attacks.get(activeAttack).damage);
     flipSelected();
     state = State.DONE;
+    numRemainingMoves = 0;
+    painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
   }
   
   public void damage(int amount) {
@@ -206,6 +219,15 @@ public class Unit extends Entity {
 
   public void setOwner(Player player) {
     owner = player;
+  }
+  
+  public void setActiveAttack(int attackId) {
+    System.out.println(config.attacks);
+    if (attackId >= 0 && attackId < config.attacks.size()) {
+      activeAttack = attackId;
+    }
+    numRemainingMoves = 0;
+    painter.updateReachableWhenAttacking(x, y, config.attacks.get(activeAttack).range);
   }
 }
 

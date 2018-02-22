@@ -13,10 +13,12 @@ import util.IPoint;
 public class CursorPainter extends EntityPainter {
 
   private Cursor cursor;
+  private final Canvas drawCanvas;
   private final BoardPainter boardPainter;
   
-  public CursorPainter(BoardPainter boardPainter) {
+  public CursorPainter(BoardPainter boardPainter, Canvas c) {
     this.boardPainter = boardPainter;
+    this.drawCanvas = c;
   }
   
   public void attach(Cursor cursor) {
@@ -25,6 +27,11 @@ public class CursorPainter extends EntityPainter {
   
   @Override
   public void redraw(List<Graphics2D> g) {
+    Graphics2D l0 = g.get(0);
+    l0.drawRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
+    
+    
+    
     Graphics l3 = g.get(2);
     Canvas drawCanvas = boardPainter.getTileDrawCanvas(cursor.gx(), cursor.gy());
     if (drawCanvas != null) {

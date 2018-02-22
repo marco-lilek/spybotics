@@ -53,7 +53,7 @@ public class GameWindow extends JPanel implements ActionListener {
   
   @Override
   protected void paintComponent(Graphics g) {
-    if (bufferImages != null) {
+    if (bufferGraphics != null) {
       for (Iterator<Graphics2D> it = bufferGraphics.iterator(); it.hasNext(); ) {
         Graphics2D gi = it.next();
         gi.setColor(new Color(0,0,0));
