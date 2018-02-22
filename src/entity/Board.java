@@ -76,6 +76,10 @@ public class Board extends Entity {
     
   }
   
+  public void attack(Unit other) {
+    other.damage(3);
+  }
+  
 /*
   @Override
   public void redraw(Graphics g) {

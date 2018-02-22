@@ -15,6 +15,7 @@ import entity.Board;
 import entity.Entity;
 import entity.painter.UnitPainter;
 import entity.player.Player;
+import entity.unit.Unit.State;
 import util.Canvas;
 import util.Direction;
 import util.IPoint;
@@ -122,10 +123,13 @@ public class Unit extends Entity {
     
     tail.clear();
     tail.putAll(prevTail);
+    board.removeUnitAt(x, y);
     x = prev.gx();
     y = prev.gy();
+    board.addUnitAt(x, y, this);
     numRemainingMoves = 5;
     painter.updateReachable(x, y, numRemainingMoves); // TODO: initial remaining moves
+    
     return prev;
   }
 
@@ -158,8 +162,11 @@ public class Unit extends Entity {
       prevTail.clear();
       prevTail.putAll(tail);
       prev = new IPoint(x,y);
-    } else if (isSelected && numRemainingMoves == 0 && state == State.MOVING) {
+    } else if (isSelected && state == State.MOVING) {
       state = State.ATTACKING;
+      numRemainingMoves = 0;
+      System.out.println("attackinb");
+      painter.updateReachableWhenAttacking(x, y, 2);
     }
     
     isSelected = !isSelected;
@@ -167,6 +174,26 @@ public class Unit extends Entity {
 
   public boolean isSelected() {
     return isSelected;
+  }
+
+  public State getState() {
+    return state;
+  }
+
+  public void attack(Unit other) {
+    board.attack(other);
+    flipSelected();
+    state = State.DONE;
+  }
+  
+  public void damage(int amount) {
+    while (amount-- >= 0) {
+      removeTail();
+    }
+  }
+
+  public boolean isReachable(int xn, int yn) {
+    return painter.getReachable().contains(new IPoint(xn, yn));
   }
 }
 

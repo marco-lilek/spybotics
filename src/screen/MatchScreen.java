@@ -50,8 +50,9 @@ public class MatchScreen extends Screen {
     
     Unit u1 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
     Unit u2 = new Unit(b, new UnitPainter(p), configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
-    this.getEntities().add(u1);
     this.getEntities().add(u2);
+    this.getEntities().add(u1);
+    
     this.getEntities().add(b);
     
     activePlayer = 0;

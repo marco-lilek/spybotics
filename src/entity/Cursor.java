@@ -93,7 +93,30 @@ public class Cursor extends Entity {
       yd = 1;
       break;
     case KEYBOARD_KEY_SPACE:
-      toggleUnitSelection();
+      Unit unitAt = board.getUnitAt(x, y);
+      if (selectedUnit != null) {
+        Unit.State unitState = selectedUnit.getState();
+        switch (unitState) {
+        case MOVING:
+          selectedUnit.flipSelected(); // TODO
+          selectedUnit = null;
+          break;
+        case ATTACKING:
+          if (unitAt == selectedUnit && selectedUnit != null) {
+            selectedUnit.flipSelected(); // TODO
+            selectedUnit = null;
+            break;
+          }
+          if (unitAt != null && !player.getUnits().contains(unitAt)) {
+            selectedUnit.attack(unitAt);
+          }
+          break;
+        }
+      } else if (unitAt != null && player.getUnits().contains(unitAt)) {
+        selectedUnit = unitAt;
+        selectedUnit.flipSelected();
+      }
+
       return;
     case KEYBOARD_KEY_U:
       if (selectedUnit != null) {
@@ -101,32 +124,20 @@ public class Cursor extends Entity {
         if (prev != null) {
           x = prev.gx(); y = prev.gy();
         }
-        
       }
       return;
     default:
       break;
     }
     
-    if (selectedUnit != null && !selectedUnit.move(xd, yd)) {
+    if (selectedUnit != null && selectedUnit.getState() == Unit.State.MOVING && !selectedUnit.move(xd, yd)) {
+      return;
+    }
+    if (selectedUnit != null && selectedUnit.getState() == Unit.State.ATTACKING && !selectedUnit.isReachable(x+xd, y+yd)) {
       return;
     }
     move(xd, yd);
   }
-  
-  private void toggleUnitSelection() {
-    if (selectedUnit != null) {
-      selectedUnit.flipSelected(); // TODO
-      selectedUnit = null;
-    } else {
-      Unit unitAt = board.getUnitAt(x, y);
-      if (unitAt != null && player.getUnits().contains(unitAt)) {
-        selectedUnit = unitAt;
-        selectedUnit.flipSelected();
-      }
-    }
-  }
-
 
   @Override
   public void tick() {

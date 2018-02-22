@@ -45,25 +45,31 @@ public class UnitPainter extends EntityPainter {
     
     if (!unit.isSelected()) return;
     
-    for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
-      IPoint p = it.next();
-      Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
-      if (drawCanvas != null) {
-        g.setColor(new Color(12,12,12));
-        g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-        g.setColor(new Color(0,0,0));
+    State unitState = unit.getState();
+    switch (unitState) {
+    case MOVING:
+      for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
+        IPoint p = it.next();
+        Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+        if (drawCanvas != null) {
+          g.setColor(new Color(12,12,12));
+          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+          g.setColor(new Color(0,0,0));
+        }
       }
+      break;
+    case ATTACKING:
+      for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
+        IPoint p = it.next();
+        Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
+        if (drawCanvas != null) {
+          g.setColor(new Color(0,255,12));
+          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+          g.setColor(new Color(0,0,0));
+        }
+      }
+      break;
     }
-    
-/*    for (Iterator<IPoint> it = board.getAdjacentTiles(new IPoint(x, y)).iterator(); it.hasNext();) {
-      IPoint p = it.next();
-      Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
-      if (drawCanvas != null) {
-        g.setColor(new Color(255,12,12));
-        g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-        g.setColor(new Color(0,0,0));
-      }
-    }*/
   }
 
   private void drawTile(Graphics g, Canvas canvas) {
@@ -84,8 +90,16 @@ public class UnitPainter extends EntityPainter {
     this.unit = unit;
   }
 
+  public void updateReachableWhenAttacking(int x, int y, int attackRange) {
+    reachableTiles = boardPainter.getAdjacentTiles(new IPoint(x, y), attackRange, null);
+  }
+  
   public void updateReachable(int x, int y, int numRemainingMoves) {
     reachableTiles = boardPainter.getAdjacentTiles(new IPoint(x, y), numRemainingMoves, unit);
+  }
+  
+  public Set<IPoint> getReachable() {
+    return reachableTiles;
   }
 }
 

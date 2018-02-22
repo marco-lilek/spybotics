@@ -108,7 +108,11 @@ public class BoardPainter extends EntityPainter {
     int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
     for (int[] move : moves) {
       int xn = tx + move[0], yn = ty + move[1];
-      if (board.isOpenAt(xn, yn) || (board.getUnitAt(xn, yn) == unit)) {
+      if (xn == 5 && yn == 0) {
+        System.out.println(String.valueOf((unit == null && board.isOpenAt(xn, yn))));
+      }
+      if ((unit == null && board.isOpenAt(xn, yn)) || 
+          (unit != null && board.isOpenAt(xn, yn) && (board.getUnitAt(xn, yn) == unit || board.getUnitAt(xn, yn) == null))) {
         toRet.add(new IPoint(xn, yn));
       }
     }
