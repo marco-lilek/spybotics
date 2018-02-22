@@ -2,10 +2,12 @@ package entity.unit;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -152,7 +154,7 @@ public class Unit extends Entity {
   }
 
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
     painter.redraw(g);
   }
   
@@ -165,7 +167,6 @@ public class Unit extends Entity {
     } else if (isSelected && state == State.MOVING) {
       state = State.ATTACKING;
       numRemainingMoves = 0;
-      System.out.println("attackinb");
       painter.updateReachableWhenAttacking(x, y, 2);
     }
     

@@ -2,6 +2,8 @@ package core;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,8 +33,9 @@ public class Game extends Communicator {
     activeScreen = ScreenFactory.getScreen(Message.GAME_SCREEN_MATCH, this);
   }
 
-  public void redraw(Graphics g) {
-    activeScreen.redraw(g);
+  public void redraw(List<Graphics2D> gl) {
+    
+    activeScreen.redraw(gl);
   }
   
   public void tick() {

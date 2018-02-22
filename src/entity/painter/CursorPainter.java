@@ -2,6 +2,8 @@ package entity.painter;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 
 import entity.Cursor;
 import util.Canvas;
@@ -22,12 +24,13 @@ public class CursorPainter extends EntityPainter {
   }
   
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
+    Graphics l3 = g.get(2);
     Canvas drawCanvas = boardPainter.getTileDrawCanvas(cursor.gx(), cursor.gy());
     if (drawCanvas != null) {
-      g.setColor(new Color(0,255,255));
-      g.drawRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
-      g.setColor(new Color(0,0,0));
+      l3.setColor(new Color(0,255,255));
+      l3.drawRect(drawCanvas.topLeft.gx(), drawCanvas.topLeft.gy(), drawCanvas.dimensions.gx(), drawCanvas.dimensions.gy());
+      l3.setColor(new Color(0,0,0));
     }
   }
 

@@ -1,6 +1,8 @@
 package entity;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 
 import core.Game;
 import entity.painter.CursorPainter;
@@ -146,7 +148,7 @@ public class Cursor extends Entity {
   }
 
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
     painter.redraw(g);
   }
 }

@@ -4,7 +4,9 @@ import util.Canvas;
 import util.Direction;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -43,10 +45,11 @@ public class BoardPainter extends EntityPainter {
   }
 
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
+    Graphics l0 = g.get(0);
     IPoint topLeft = drawCanvas.topLeft;
     IPoint dimensions = drawCanvas.dimensions;
-    g.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    l0.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
     
     int totalWidthTiles = board.getConfig().getWidthTiles();
     int totalHeightTiles = board.getConfig().getHeightTiles();
@@ -58,7 +61,7 @@ public class BoardPainter extends EntityPainter {
           if (floorTileCanvas != null) {
             IPoint ftTopLeft = floorTileCanvas.topLeft;
             IPoint ftDimensions = floorTileCanvas.dimensions;
-            g.drawRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
+            l0.drawRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
           }
         }
       }
@@ -108,9 +111,6 @@ public class BoardPainter extends EntityPainter {
     int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
     for (int[] move : moves) {
       int xn = tx + move[0], yn = ty + move[1];
-      if (xn == 5 && yn == 0) {
-        System.out.println(String.valueOf((unit == null && board.isOpenAt(xn, yn))));
-      }
       if ((unit == null && board.isOpenAt(xn, yn)) || 
           (unit != null && board.isOpenAt(xn, yn) && (board.getUnitAt(xn, yn) == unit || board.getUnitAt(xn, yn) == null))) {
         toRet.add(new IPoint(xn, yn));

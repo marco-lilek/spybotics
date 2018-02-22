@@ -1,6 +1,8 @@
 package entity;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -13,7 +15,7 @@ import util.communicator.Message;
 
 public abstract class Entity extends CallbackNotifier<Message> implements Comparable {
 
-  public abstract void redraw(Graphics g); 
+  public abstract void redraw(List<Graphics2D> g);
   
   public abstract void tick();
   

@@ -3,10 +3,12 @@ package entity;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,11 +66,6 @@ public class Board extends Entity {
   public void removeUnitAt(int x, int y) {
     this.unitAtTiles[x][y] = null;
   }
-
-  @Override
-  public void redraw(Graphics g) {
-    painter.redraw(g);
-  }
   
   @Override
   public void tick() {
@@ -78,6 +75,11 @@ public class Board extends Entity {
   
   public void attack(Unit other) {
     other.damage(3);
+  }
+
+  @Override
+  public void redraw(List<Graphics2D> g) {
+    painter.redraw(g);
   }
   
 /*

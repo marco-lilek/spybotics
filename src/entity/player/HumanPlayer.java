@@ -1,6 +1,8 @@
 package entity.player;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
 
 import entity.Board;
 import entity.Cursor;
@@ -27,7 +29,7 @@ public class HumanPlayer extends Player {
   }
 
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
     super.redraw(g);
     if (screen.whosTurn() == this) {
       cursor.redraw(g);

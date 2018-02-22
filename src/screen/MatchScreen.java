@@ -57,7 +57,7 @@ public class MatchScreen extends Screen {
     
     activePlayer = 0;
     players = new ArrayList<Player>();
-    players.add(new HumanPlayer(b, this, p));    
+    players.add(new HumanPlayer(b, this, p));
     players.add(new HumanPlayer(b, this, p));
     for (Player player : players) {
       this.getEntities().add(player);

@@ -2,8 +2,10 @@ package entity.painter;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,10 +30,12 @@ public class UnitPainter extends EntityPainter {
     reachableTiles = new TreeSet<IPoint>();
   }
   
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
+    Graphics l1 = g.get(1);
+    Graphics l2 = g.get(2);
     Canvas canvas = boardPainter.getTileDrawCanvas(unit.gx(), unit.gy());
     if (canvas != null) {
-      drawTile(g, canvas);
+      drawTile(l1, canvas);
     }
     
     int idx = 0;
@@ -39,7 +43,7 @@ public class UnitPainter extends EntityPainter {
       IPoint p = it.next();
       Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
       if (drawCanvas != null) {
-        drawTailTile(g, drawCanvas, idx + 1);
+        drawTailTile(l1, drawCanvas, idx + 1);
       }
     }
     
@@ -52,9 +56,9 @@ public class UnitPainter extends EntityPainter {
         IPoint p = it.next();
         Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
         if (drawCanvas != null) {
-          g.setColor(new Color(12,12,12));
-          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-          g.setColor(new Color(0,0,0));
+          l2.setColor(new Color(12,12,12));
+          l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+          l2.setColor(new Color(0,0,0));
         }
       }
       break;
@@ -63,9 +67,9 @@ public class UnitPainter extends EntityPainter {
         IPoint p = it.next();
         Canvas drawCanvas = boardPainter.getTileDrawCanvas(p.gx(), p.gy());
         if (drawCanvas != null) {
-          g.setColor(new Color(0,255,12));
-          g.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
-          g.setColor(new Color(0,0,0));
+          l2.setColor(new Color(0,255,12));
+          l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
+          l2.setColor(new Color(0,0,0));
         }
       }
       break;
@@ -92,6 +96,7 @@ public class UnitPainter extends EntityPainter {
 
   public void updateReachableWhenAttacking(int x, int y, int attackRange) {
     reachableTiles = boardPainter.getAdjacentTiles(new IPoint(x, y), attackRange, null);
+    System.out.println(reachableTiles);
   }
   
   public void updateReachable(int x, int y, int numRemainingMoves) {

@@ -2,7 +2,9 @@ package entity.player;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +30,7 @@ public abstract class Player extends Entity {
   }
   
   @Override
-  public void redraw(Graphics g) {
+  public void redraw(List<Graphics2D> g) {
     for (Iterator<Unit> it = units.iterator(); it.hasNext(); ) {
       Unit activeUnit = it.next();
       activeUnit.redraw(g);
