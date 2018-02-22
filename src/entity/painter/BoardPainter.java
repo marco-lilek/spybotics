@@ -4,8 +4,12 @@ import util.Canvas;
 import util.Direction;
 
 import java.awt.Graphics;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import entity.Board;
+import entity.unit.Unit;
 import util.IPoint;
 
 public class BoardPainter extends EntityPainter {
@@ -82,7 +86,34 @@ public class BoardPainter extends EntityPainter {
 
   public Canvas getTilesCanvas() {
     return new Canvas(new IPoint(0, 0), new IPoint(canvasWidthTiles - 1, canvasHeightTiles - 1));
-  }  
+  }
+  
+  public Set<IPoint> getAdjacentTiles(IPoint tile, int distance, Unit unit) {
+    Set<IPoint> adjTiles = new TreeSet<IPoint>();
+    adjTiles.add(tile);
+    for (int i = 0; i < distance; i++) {
+      Set<IPoint> newEntries = new TreeSet<IPoint>();
+      for (Iterator<IPoint> rti = adjTiles.iterator(); rti.hasNext();) {
+        IPoint reachableTile = rti.next();
+        newEntries.addAll(getAdjacentTiles(reachableTile, unit));
+      }
+      adjTiles.addAll(newEntries);
+    }
+    return adjTiles;
+  }
+  
+  private Set<IPoint> getAdjacentTiles(IPoint tile, Unit unit) {
+    Set<IPoint>toRet = new TreeSet<IPoint>();
+    int tx = tile.gx(), ty = tile.gy();
+    int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
+    for (int[] move : moves) {
+      int xn = tx + move[0], yn = ty + move[1];
+      if (board.isOpenAt(xn, yn) || (board.getUnitAt(xn, yn) == unit)) {
+        toRet.add(new IPoint(xn, yn));
+      }
+    }
+    return toRet;
+  }
 }
 
 /*

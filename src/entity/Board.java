@@ -48,6 +48,8 @@ public class Board extends Entity {
   }
 
   public Unit getUnitAt(int x, int y) {
+    if (x < 0 || x == config.getWidthTiles() || y < 0 || y == config.getHeightTiles())
+      return null;
     return unitAtTiles[x][y];
   }
 

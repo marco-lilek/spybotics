@@ -30,27 +30,33 @@ public class Unit extends Entity {
   }
   
   private State state;
+  private boolean isSelected;
   private final UnitConfig config;
   private int numRemainingMoves;
   private int x,y;
   private final Board board;
   private final UnitPainter painter;
   
+  private IPoint prev;
+  private Map<IPoint,Boolean> prevTail;
+  
   private Map<IPoint,Boolean> tail;
   
   public Unit(Board board, UnitPainter painter, UnitConfig config, int x, int y) {
     state = State.IDLE;
+    isSelected = false;
     this.config = config;
     this.x = x;
     this.y = y;
     this.board = board;
     this.painter = painter;
     tail = new LinkedHashMap<IPoint,Boolean>();
+    prevTail = new LinkedHashMap<IPoint,Boolean>();
     
     numRemainingMoves = 5;
     board.addUnitAt(x, y, this);
     painter.attach(this);
-    
+    painter.updateReachable(x, y, numRemainingMoves);
   }
 
   @Override
@@ -78,6 +84,8 @@ public class Unit extends Entity {
   }
   
   public boolean move(int xd, int yd) {
+    if (numRemainingMoves == 0) return false;
+    
     int xn = x + xd;
     int yn = y + yd;
     Unit unitAtN = board.getUnitAt(xn, yn);
@@ -95,13 +103,30 @@ public class Unit extends Entity {
     x = xn;
     y = yn;
     System.out.println(new IPoint(x, y));
-    --numRemainingMoves;
+    painter.updateReachable(xn, yn, --numRemainingMoves);
     return true;
   }
 
-  public void undoMove() {
-    // TODO Auto-generated method stub
+  public IPoint undoMove() {
+    if (state != State.MOVING) return null; // TODO: consider changing to exception-based model
     
+    for (Iterator<IPoint> it = tail.keySet().iterator(); it.hasNext();) {
+      IPoint p = it.next();
+      board.removeUnitAt(p.gx(), p.gy());
+    }
+    
+    for (Iterator<IPoint> it = prevTail.keySet().iterator(); it.hasNext();) {
+      IPoint p = it.next();
+      board.addUnitAt(p.gx(),p.gy(), this);
+    }
+    
+    tail.clear();
+    tail.putAll(prevTail);
+    x = prev.gx();
+    y = prev.gy();
+    numRemainingMoves = 5;
+    painter.updateReachable(x, y, numRemainingMoves); // TODO: initial remaining moves
+    return prev;
   }
 
   public int gx() {
@@ -125,6 +150,23 @@ public class Unit extends Entity {
   @Override
   public void redraw(Graphics g) {
     painter.redraw(g);
+  }
+  
+  public void flipSelected() {
+    if (!isSelected && state == State.IDLE) {
+      state = State.MOVING;
+      prevTail.clear();
+      prevTail.putAll(tail);
+      prev = new IPoint(x,y);
+    } else if (isSelected && numRemainingMoves == 0 && state == State.MOVING) {
+      state = State.ATTACKING;
+    }
+    
+    isSelected = !isSelected;
+  }
+
+  public boolean isSelected() {
+    return isSelected;
   }
 }
 

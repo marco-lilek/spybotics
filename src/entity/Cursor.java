@@ -95,6 +95,15 @@ public class Cursor extends Entity {
     case KEYBOARD_KEY_SPACE:
       toggleUnitSelection();
       return;
+    case KEYBOARD_KEY_U:
+      if (selectedUnit != null) {
+        IPoint prev = selectedUnit.undoMove();
+        if (prev != null) {
+          x = prev.gx(); y = prev.gy();
+        }
+        
+      }
+      return;
     default:
       break;
     }
@@ -107,11 +116,14 @@ public class Cursor extends Entity {
   
   private void toggleUnitSelection() {
     if (selectedUnit != null) {
-      selectedUnit.undoMove();
+      selectedUnit.flipSelected(); // TODO
       selectedUnit = null;
     } else {
       Unit unitAt = board.getUnitAt(x, y);
-      if (unitAt != null && player.getUnits().contains(unitAt)) selectedUnit = unitAt;
+      if (unitAt != null && player.getUnits().contains(unitAt)) {
+        selectedUnit = unitAt;
+        selectedUnit.flipSelected();
+      }
     }
   }
 
