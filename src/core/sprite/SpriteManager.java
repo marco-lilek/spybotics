@@ -1,9 +1,12 @@
 package core.sprite;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
@@ -27,7 +30,7 @@ public class SpriteManager {
     public int filterRGB(int x, int y, int rgb) {
       int transparentRGB = (rgb & 0x00ffffff);
       if (transparentRGB == bgColorRGB) {
-        return transparentRGB;
+        return 0x0;
       } else {
         return rgb;
       }
@@ -36,6 +39,8 @@ public class SpriteManager {
   
   private static final SpriteManager manager = new SpriteManager();
   private Image spriteSheet;
+  
+  private static final int SPRITEW = 32;
   
   SpriteManager() {
     try {
@@ -52,8 +57,8 @@ public class SpriteManager {
     return Toolkit.getDefaultToolkit().createImage(ip);
   }
   
-  public void drawSheet(Graphics g) {
-    g.drawImage(spriteSheet, 0, 0, 32, 32, 0, 0, 32, 32, null);
+  public void drawSprite(Graphics2D g, int idx, int x, int y) {
+    g.drawImage(spriteSheet, x + 5, y, x+SPRITEW, y+SPRITEW, 0, 0, SPRITEW, SPRITEW, null);
   }
   
   public static SpriteManager getManager() {

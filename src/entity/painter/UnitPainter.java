@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import config.UnitConfig;
+import core.sprite.SpriteManager;
 import entity.Board;
 import screen.MatchScreen;
 import entity.Entity;
@@ -31,13 +32,12 @@ public class UnitPainter extends EntityPainter {
   }
   
   public void redraw(List<Graphics2D> g) {
-    Graphics l1 = g.get(1);
-    Graphics l2 = g.get(2);
+    Graphics2D l1 = g.get(1);
+    Graphics2D l2 = g.get(2);
     Board board = ((MatchScreen)unit.getScreen()).getBoard();
     Canvas canvas = board.getTileDrawCanvas(unit.gx(), unit.gy());
-    if (canvas != null) {
-      drawTile(l1, canvas);
-    }
+    drawTile(l1, canvas);
+    SpriteManager.getManager().drawSprite(l1, 0, canvas.topLeft.gx(), canvas.topLeft.gy());
     
     int idx = 0;
     for (Iterator<IPoint> it = unit.getTail().keySet().iterator(); it.hasNext(); idx++) {
@@ -79,9 +79,10 @@ public class UnitPainter extends EntityPainter {
   }
 
   private void drawTile(Graphics g, Canvas canvas) {
-    g.setColor(new Color(255,0,0));
+    g.setColor(unit.getConfig().getRGB().darker().darker());
+    g.fillRect(canvas.topLeft.gx() + 2, canvas.topLeft.gy() + 2, canvas.dimensions.gx(), canvas.dimensions.gy());
+    g.setColor(unit.getConfig().getRGB());
     g.fillRect(canvas.topLeft.gx(), canvas.topLeft.gy(), canvas.dimensions.gx(), canvas.dimensions.gy());
-    g.setColor(new Color(0,0,0));
   }
   
   private void drawTailTile(Graphics g, Canvas drawCanvas, int idx) {
@@ -89,7 +90,6 @@ public class UnitPainter extends EntityPainter {
     drawTile(g, drawCanvas);
     g.setColor(unit.getConfig().getRGB().darker().darker());
     g.drawString(String.valueOf(idx), topLeft.gx() + 6, topLeft.gy() + 16);
-    g.setColor(new Color(0,0,0));
   }
   
   public Set<IPoint> getReachable() {

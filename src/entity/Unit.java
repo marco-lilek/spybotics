@@ -255,6 +255,12 @@ public class Unit extends Entity {
     state = prevState;
     painter.update();
   }
+
+  public void reset() {
+    state = State.IDLE;
+    numRemainingMoves = 5;
+    screen.getBoard().addUnitAt(x, y, this);
+  }
 }
 
 /*

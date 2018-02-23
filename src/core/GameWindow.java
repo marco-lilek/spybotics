@@ -60,7 +60,7 @@ public class GameWindow extends JPanel implements ActionListener {
         gi.setComposite(AlphaComposite.Clear);
         
         gi.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        gi.setComposite(AlphaComposite.Src);
+        gi.setComposite(AlphaComposite.SrcOver);
       }
       
       game.redraw(bufferGraphics);

@@ -13,10 +13,13 @@ public class UnitConfig {
   public String color_rgb_hex;
   public int max_tail_length;
   public int movement_speed;
+  public int sprite_entry;
   
   public List<AttackConfig> attacks; 
   
   public Color getRGB() {
     return new Color(Integer.parseInt(color_rgb_hex, 16));
   }
+  
+
 }

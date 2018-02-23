@@ -96,6 +96,7 @@ public class MatchScreen extends Screen {
           }
           if (unitAt != null && !player.getUnits().contains(unitAt)) {
             selectedUnit.attack(unitAt);
+            activeCursor.setSelectedUnit(null);
           }
           break;
         }
@@ -104,6 +105,11 @@ public class MatchScreen extends Screen {
         unitAt.flipSelected();
       }
 
+      return;
+    case KEYBOARD_KEY_E:
+      if (selectedUnit != null) return;
+      player.getUnits().stream().forEach(u -> u.reset());
+      activePlayer = (activePlayer + 1) % players.size();
       return;
     case KEYBOARD_KEY_C:
       if (selectedUnit != null) {
@@ -120,11 +126,10 @@ public class MatchScreen extends Screen {
           activeCursor.setSelectedUnit(null);
           break;
         }
-        
       }
       return;
     case KEYBOARD_KEY_F:
-      if (selectedUnit != null) {
+      if (selectedUnit != null && selectedUnit.getState() != State.ATTACKING) {
         if (activeCursor.togglePeeking()) {
           selectedUnit.peekAttack();
         } else {
