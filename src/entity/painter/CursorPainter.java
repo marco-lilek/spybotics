@@ -36,9 +36,12 @@ public class CursorPainter extends EntityPainter {
     Graphics2D l0 = g.get(0);
     
     l0.setColor(Colors.WINDOW_TOP.darker());
-    l0.fillRect(UNITINFO_XOFFSET + 2, UNITINFO_YOFFSET - 20 + 2, UNITINFO_WIDTH, UNITINFO_HEIGHT);
+    l0.fillRect(UNITINFO_XOFFSET + 2, UNITINFO_YOFFSET - 20 + 2, UNITINFO_WIDTH, 20);
     l0.setColor(Colors.WINDOW_TOP);
-    l0.fillRect(UNITINFO_XOFFSET, UNITINFO_YOFFSET - 20, UNITINFO_WIDTH, UNITINFO_HEIGHT);
+    l0.fillRect(UNITINFO_XOFFSET, UNITINFO_YOFFSET - 20, UNITINFO_WIDTH, 20);
+    
+    l0.setColor(cursor.owner().getColor());
+    l0.fillRect(UNITINFO_XOFFSET + UNITINFO_WIDTH - 60, UNITINFO_YOFFSET - 20, 50, 14);
     
     l0.setColor(Colors.WINDOW.darker());
     l0.fillRect(UNITINFO_XOFFSET + 2, UNITINFO_YOFFSET + 2, UNITINFO_WIDTH, UNITINFO_HEIGHT);

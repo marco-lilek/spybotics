@@ -17,6 +17,7 @@ import entity.Entity;
 import entity.Unit;
 import screen.MatchScreen;
 import screen.Screen;
+import util.Colors;
 import util.JSONLoader;
 import util.communicator.CallbackNotifier;
 
@@ -27,11 +28,7 @@ public abstract class Player extends Entity {
   
   public Player(MatchScreen screen) {
     super(screen);
-    Random rand = new Random();
-    float r = rand.nextFloat();
-    float g = rand.nextFloat();
-    float b = rand.nextFloat();
-    color = new Color(r,g,b);
+    color = Colors.PLAYER_COLORS.get(ThreadLocalRandom.current().nextInt(0, Colors.PLAYER_COLORS.size()));
     units = new TreeSet<Unit>();
   }
   

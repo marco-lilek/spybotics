@@ -91,16 +91,17 @@ public class MatchScreen extends Screen {
           }
           break;
         case ATTACKING:
-          if (selectedUnit != null && selectedUnit.getConfig().attacks.get(selectedUnit.getSelectedAttack()).damage == -1 && unitAt == null) {
-            board.flipFloorTile(x, y);
-            selectedUnit.cancel(State.DONE);
-            activeCursor.setSelectedUnit(null);
+          if (selectedUnit != null && selectedUnit.getConfig().attacks.get(selectedUnit.getSelectedAttack()).damage == -1) {
+            if (unitAt == null) {
+              board.flipFloorTile(x, y);
+              selectedUnit.cancel(State.DONE);
+              activeCursor.setSelectedUnit(null);
+            }
           } else if (selectedUnit != null && unitAt == selectedUnit && unitAt.gx() == activeCursor.gx() && unitAt.gy() == activeCursor.gy()) {
-            selectedUnit.flipSelected();
+            selectedUnit.cancel(State.ATTACKING);
             activeCursor.setSelectedUnit(null);
             break;
-          }
-          if (unitAt != null && !player.getUnits().contains(unitAt)) {
+          } else if (unitAt != null && !player.getUnits().contains(unitAt)) {
             selectedUnit.attack(unitAt);
             activeCursor.setSelectedUnit(null);
           }
