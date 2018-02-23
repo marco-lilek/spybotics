@@ -1,8 +1,10 @@
 package entity.painter;
 
 import util.Canvas;
+import util.Colors;
 import util.Direction;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Iterator;
@@ -13,6 +15,8 @@ import java.util.TreeSet;
 import entity.Board;
 import entity.Entity;
 import entity.Unit;
+import entity.player.Player;
+import screen.MatchScreen;
 import util.IPoint;
 
 public class BoardPainter extends EntityPainter {
@@ -51,7 +55,32 @@ public class BoardPainter extends EntityPainter {
     Graphics l0 = g.get(0);
     IPoint topLeft = drawCanvas.topLeft;
     IPoint dimensions = drawCanvas.dimensions;
-    l0.drawRect(topLeft.gx(), topLeft.gy(), dimensions.gx(), dimensions.gy());
+    final int PADDING = 5;
+    
+    
+    l0.setColor(Colors.WINDOW_TOP.darker());
+    l0.fillRect(topLeft.gx() - PADDING + 2, topLeft.gy() - PADDING - 20 + 2, dimensions.gx() + PADDING + 2, 20);
+    l0.setColor(Colors.WINDOW_TOP);
+    l0.fillRect(topLeft.gx() - PADDING, topLeft.gy() - PADDING - 20, dimensions.gx() + PADDING + 2, 20);
+    
+    {
+      MatchScreen screen = ((MatchScreen)board.getScreen());
+      int offset = 0;
+      for (Iterator<Player> pit = screen.getPlayers().iterator(); pit.hasNext(); offset += 20) {
+        Player p = pit.next();
+        l0.setColor(p.getColor());
+        l0.fillRect(topLeft.gx() - PADDING + dimensions.gx() + PADDING - 20 - offset, topLeft.gy() - PADDING - 20, 10, 15);
+        if (p == screen.whosTurn()) {
+          l0.setColor(Color.BLACK);
+          l0.fillRect(topLeft.gx() - PADDING + dimensions.gx() + PADDING - 20 - offset, topLeft.gy() - PADDING - 10, 10, 5);
+        }
+      }
+    }
+    l0.setColor(Colors.WINDOW.darker());
+    l0.fillRect(topLeft.gx() - PADDING + 2, topLeft.gy() - PADDING + 2, dimensions.gx() + PADDING + 2, dimensions.gy() + PADDING + 1);
+    l0.setColor(Colors.WINDOW);
+    l0.fillRect(topLeft.gx() - PADDING, topLeft.gy() - PADDING, dimensions.gx() + PADDING + 2, dimensions.gy() + PADDING + 1);
+    l0.setColor(new Color(0,0,0));
     
     int totalWidthTiles = board.getConfig().getWidthTiles();
     int totalHeightTiles = board.getConfig().getHeightTiles();
@@ -63,7 +92,8 @@ public class BoardPainter extends EntityPainter {
           if (floorTileCanvas != null) {
             IPoint ftTopLeft = floorTileCanvas.topLeft;
             IPoint ftDimensions = floorTileCanvas.dimensions;
-            l0.drawRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
+            l0.setColor(new Color(225, 225, 225));
+            l0.fillRect(ftTopLeft.gx(), ftTopLeft.gy(), ftDimensions.gx(), ftDimensions.gy());
           }
         }
       }

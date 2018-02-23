@@ -219,6 +219,10 @@ public class Unit extends Entity {
     owner = player;
   }
   
+  public Player getOwner() {
+    return owner;
+  }
+  
   public void setActiveAttack(int attackId) {
     if (state == State.DONE) return;
     
@@ -260,6 +264,11 @@ public class Unit extends Entity {
     state = State.IDLE;
     numRemainingMoves = 5;
     screen.getBoard().addUnitAt(x, y, this);
+  }
+
+  public int sprite() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 import config.BoardConfig;
@@ -174,6 +175,14 @@ public class MatchScreen extends Screen {
   
   public Board getBoard() {
     return board;
+  }
+
+  public int getActivePlayer() {
+    return activePlayer;
+  }
+
+  public List<Player> getPlayers() {
+    return players;
   }
   
 

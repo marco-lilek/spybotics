@@ -63,6 +63,8 @@ public class GameWindow extends JPanel implements ActionListener {
         gi.setComposite(AlphaComposite.SrcOver);
       }
       
+      bufferGraphics.get(0).setColor(new Color(50,50,50));
+      bufferGraphics.get(0).fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
       game.redraw(bufferGraphics);
       
       Graphics offscreenGraphics = offscreen.getGraphics();

@@ -19,6 +19,7 @@ import entity.Unit;
 import entity.Unit.State;
 import entity.player.Player;
 import util.Canvas;
+import util.Colors;
 import util.IPoint;
 
 public class UnitPainter extends EntityPainter {
@@ -39,6 +40,14 @@ public class UnitPainter extends EntityPainter {
     drawTile(l1, canvas);
     SpriteManager.getManager().drawSprite(l1, 0, canvas.topLeft.gx(), canvas.topLeft.gy());
     
+    if (unit.getState() == State.ATTACKING) {
+      l1.setColor(new Color(0,0,200));
+      l1.fillRect(canvas.topLeft.gx() + 2, canvas.topLeft.gy() +2, 5, 5); 
+    } else if (unit.getState() == State.DONE) {
+      l1.setColor(new Color(200,0,0));
+      l1.fillRect(canvas.topLeft.gx() + 2, canvas.topLeft.gy() + 2, 5, 5);
+    }
+    
     int idx = 0;
     for (Iterator<IPoint> it = unit.getTail().keySet().iterator(); it.hasNext(); idx++) {
       IPoint p = it.next();
@@ -48,6 +57,9 @@ public class UnitPainter extends EntityPainter {
       }
     }
     
+    l2.setColor(unit.getOwner().getColor());
+    l2.drawRect(canvas.topLeft.gx(), canvas.topLeft.gy() , canvas.dimensions.gx() - 1, canvas.dimensions.gy() - 1);
+    
     if (!unit.isSelected() && unit.getState() != State.PEEKING) return;
     
     State unitState = unit.getState();
@@ -56,8 +68,8 @@ public class UnitPainter extends EntityPainter {
       for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
         IPoint p = it.next();
         Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
-        if (drawCanvas != null) {
-          l2.setColor(new Color(12,12,12));
+        if (drawCanvas != null && !(p.gx() == unit.gx() && p.gy() == unit.gy())) {
+          l2.setColor(Colors.LIGHT_BLUE);
           l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
           l2.setColor(new Color(0,0,0));
         }
@@ -68,8 +80,8 @@ public class UnitPainter extends EntityPainter {
       for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
         IPoint p = it.next();
         Canvas drawCanvas = board.getTileDrawCanvas(p.gx(), p.gy());
-        if (drawCanvas != null) {
-          l2.setColor(new Color(0,255,12));
+        if (drawCanvas != null && !(p.gx() == unit.gx() && p.gy() == unit.gy())) {
+          l2.setColor(Colors.LIGHT_RED);
           l2.fillRect(drawCanvas.topLeft.gx() + 8, drawCanvas.topLeft.gy() + 8, drawCanvas.dimensions.gx() - 16, drawCanvas.dimensions.gy() - 16);
           l2.setColor(new Color(0,0,0));
         }
