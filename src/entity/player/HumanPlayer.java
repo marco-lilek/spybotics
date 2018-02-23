@@ -20,15 +20,12 @@ public class HumanPlayer extends Player {
   public HumanPlayer(MatchScreen screen) {
     super(screen);
     this.screen = screen;
-    cursor = new Cursor(screen);
+    cursor = new Cursor(screen, this);
   }
 
   @Override
   public void redraw(List<Graphics2D> g) {
     super.redraw(g);
-    if (screen.whosTurn() == this) {
-      cursor.redraw(g);
-    }
   }
   
   public Cursor getCursor() { return cursor; }

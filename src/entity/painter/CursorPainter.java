@@ -29,6 +29,8 @@ public class CursorPainter extends EntityPainter {
   
   @Override
   public void redraw(List<Graphics2D> g) {
+    if (((MatchScreen) cursor.getScreen()).whosTurn() != cursor.owner()) return;
+    
     Graphics2D l0 = g.get(0);
     
     l0.drawRect(UNITINFO_XOFFSET, UNITINFO_YOFFSET, UNITINFO_WIDTH, UNITINFO_HEIGHT);

@@ -17,12 +17,14 @@ import util.IPoint;
 public class Cursor extends Entity {
   
   private final CursorPainter painter;
+  private final Player owner;
   private Unit selectedUnit;
   private int x,y;
   private boolean peeking;
   
-  public Cursor(MatchScreen screen) {
+  public Cursor(MatchScreen screen, Player p) {
     super(screen);
+    this.owner = p;
     this.painter = new CursorPainter(this);
     x = 0; y = 0;
   }
@@ -61,6 +63,10 @@ public class Cursor extends Entity {
 
   public boolean isPeeking() {
     return peeking;
+  }
+
+  public Player owner() {
+    return owner;
   }
   
 /*
