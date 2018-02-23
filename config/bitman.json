@@ -1,0 +1,13 @@
+{
+  "name": "bitman",
+  "color_rgb_hex": "00aa00",
+  "max_tail_length": 7,
+  "movement_speed": 5,
+  "attacks": [
+    {
+      "name": "dig",
+      "damage": -1,
+      "range": 1
+    }
+  ]
+}

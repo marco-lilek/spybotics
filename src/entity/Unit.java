@@ -180,6 +180,7 @@ public class Unit extends Entity {
         break;
       case ATTACKING:
         state = State.DONE;
+        numRemainingMoves = 0;
         painter.update();
         break;
       }
@@ -200,9 +201,6 @@ public class Unit extends Entity {
   public void attack(Unit other) {
     screen.getBoard().attack(other, config.attacks.get(selectedAttack).damage);
     flipSelected();
-    state = State.DONE;
-    numRemainingMoves = 0;
-    painter.update();
   }
   
   public void damage(int amount) {

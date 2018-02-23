@@ -97,12 +97,16 @@ public class Board extends Entity {
     int[][] moves = new int[][] {{-1,0}, {1,0}, {0,-1}, {0,1}};
     for (int[] move : moves) {
       int xn = tx + move[0], yn = ty + move[1];
-      if ((unit == null && isOpenAt(xn, yn)) || 
+      if ((unit == null && isInBounds(xn, yn)) || 
           (unit != null && isOpenAt(xn, yn) && (getUnitAt(xn, yn) == unit || getUnitAt(xn, yn) == null))) {
         toRet.add(new IPoint(xn, yn));
       }
     }
     return toRet;
+  }
+  
+  public void flipFloorTile(int x, int y) {
+    floorTiles[x][y] = !floorTiles[x][y];
   }
 /*
   @Override

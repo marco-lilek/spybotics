@@ -46,9 +46,11 @@ public class MatchScreen extends Screen {
     
     board = new Board(this, configLoader.loadJSONFromFile("config/test_board.json", BoardConfig.class));
     Unit u1 = new Unit(this, configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 0, 0);
-    Unit u2 = new Unit(this, configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
+    Unit u2 = new Unit(this, configLoader.loadJSONFromFile("config/bitman.json", UnitConfig.class), 0, 1);
+    Unit u3 = new Unit(this, configLoader.loadJSONFromFile("config/test_unit.json", UnitConfig.class), 5, 0);
     p1.own(u1);
-    p2.own(u2);
+    p1.own(u2);
+    p2.own(u3);
   }
   
   public Player whosTurn() {
@@ -87,10 +89,13 @@ public class MatchScreen extends Screen {
             selectedUnit.flipSelected();
             activeCursor.setSelectedUnit(null);
           }
-          
           break;
         case ATTACKING:
-          if (selectedUnit != null && unitAt == selectedUnit && unitAt.gx() == activeCursor.gx() && unitAt.gy() == activeCursor.gy()) {
+          if (selectedUnit != null && selectedUnit.getConfig().attacks.get(selectedUnit.getSelectedAttack()).damage == -1 && unitAt == null) {
+            board.flipFloorTile(x, y);
+            selectedUnit.cancel(State.DONE);
+            activeCursor.setSelectedUnit(null);
+          } else if (selectedUnit != null && unitAt == selectedUnit && unitAt.gx() == activeCursor.gx() && unitAt.gy() == activeCursor.gy()) {
             selectedUnit.flipSelected();
             activeCursor.setSelectedUnit(null);
             break;
