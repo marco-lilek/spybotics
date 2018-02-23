@@ -106,11 +106,21 @@ public class MatchScreen extends Screen {
 
       return;
     case KEYBOARD_KEY_C:
-      if (selectedUnit != null && selectedUnit.getState() == State.MOVING) {
-        IPoint prev = selectedUnit.undoMove();
-        activeCursor.setPos(prev.gx(), prev.gy());
-        selectedUnit.cancel();
-        activeCursor.setSelectedUnit(null);
+      if (selectedUnit != null) {
+        switch (selectedUnit.getState()) {
+        case MOVING:
+          IPoint prev = selectedUnit.undoMove();
+          activeCursor.setPos(prev.gx(), prev.gy());
+          selectedUnit.cancel(State.IDLE);
+          activeCursor.setSelectedUnit(null);
+          break;
+        case ATTACKING:
+          activeCursor.setPos(selectedUnit.gx(), selectedUnit.gy());
+          selectedUnit.cancel(State.ATTACKING);
+          activeCursor.setSelectedUnit(null);
+          break;
+        }
+        
       }
       return;
     case KEYBOARD_KEY_F:

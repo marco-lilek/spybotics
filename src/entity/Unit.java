@@ -158,8 +158,8 @@ public class Unit extends Entity {
     return config;
   }
   
-  public void cancel() {
-    state = State.IDLE;
+  public void cancel(State newState) {
+    state = newState;
     isSelected = false;
     painter.update();
   }
