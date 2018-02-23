@@ -15,10 +15,11 @@ import util.Direction;
 import util.IPoint;
 
 public class Cursor extends Entity {
-
+  
   private final CursorPainter painter;
   private Unit selectedUnit;
   private int x,y;
+  private boolean peeking;
   
   public Cursor(MatchScreen screen) {
     super(screen);
@@ -51,6 +52,15 @@ public class Cursor extends Entity {
   public void setPos(int gx, int gy) {
     x = gx;
     y = gy;
+  }
+
+  public boolean togglePeeking() {
+    peeking = !peeking;
+    return peeking;
+  }
+
+  public boolean isPeeking() {
+    return peeking;
   }
   
 /*

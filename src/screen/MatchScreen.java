@@ -30,11 +30,6 @@ import util.communicator.KeyboardMessage;
 
 public class MatchScreen extends Screen {
   
-/*  private static final int UNITINFO_XOFFSET = 30;
-  private static final int UNITINFO_YOFFSET = 30;
-  private static final int UNITINFO_WIDTH = 210;
-  private static final int UNITINFO_HEIGHT = 200;
-  */
   private Board board;
   private List<Player> players;
   private int activePlayer;
@@ -87,12 +82,15 @@ public class MatchScreen extends Screen {
         Unit.State unitState = selectedUnit.getState();
         switch (unitState) {
         case MOVING:
-          selectedUnit.flipSelected(); // TODO
-          activeCursor.setSelectedUnit(null);
+          if (player.getUnits().contains(selectedUnit)) {
+            selectedUnit.flipSelected();
+            activeCursor.setSelectedUnit(null);
+          }
+          
           break;
         case ATTACKING:
-          if (selectedUnit != null && unitAt == selectedUnit) {
-            selectedUnit.flipSelected(); // TODO
+          if (selectedUnit != null && unitAt == selectedUnit && unitAt.gx() == activeCursor.gx() && unitAt.gy() == activeCursor.gy()) {
+            selectedUnit.flipSelected();
             activeCursor.setSelectedUnit(null);
             break;
           }
@@ -101,13 +99,32 @@ public class MatchScreen extends Screen {
           }
           break;
         }
-      } else if (unitAt != null && player.getUnits().contains(unitAt)) {
+      } else if (unitAt != null && unitAt.gx() == activeCursor.gx() && unitAt.gy() == activeCursor.gy() && unitAt.getState() != State.DONE) {
         activeCursor.setSelectedUnit(unitAt);
         unitAt.flipSelected();
       }
 
       return;
+    case KEYBOARD_KEY_C:
+      if (selectedUnit != null && selectedUnit.getState() == State.MOVING) {
+        IPoint prev = selectedUnit.undoMove();
+        activeCursor.setPos(prev.gx(), prev.gy());
+        selectedUnit.cancel();
+        activeCursor.setSelectedUnit(null);
+      }
+      return;
+    case KEYBOARD_KEY_F:
+      if (selectedUnit != null) {
+        if (activeCursor.togglePeeking()) {
+          selectedUnit.peekAttack();
+        } else {
+          selectedUnit.cancelPeek();
+        }
+      }
+      return;
     case KEYBOARD_KEY_U:
+      if (activeCursor.isPeeking()) return;
+      
       if (selectedUnit != null) {
         IPoint prev = selectedUnit.undoMove();
         if (prev != null) {
@@ -116,12 +133,12 @@ public class MatchScreen extends Screen {
       }
       return;
     case KEYBOARD_KEY_1:
-      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y) {
         selectedUnit.setActiveAttack(0);
       }
       return;
     case KEYBOARD_KEY_2:
-      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y && selectedUnit.getState() == State.ATTACKING) {
+      if (selectedUnit != null && selectedUnit.gx() == x && selectedUnit.gy() == y) {
         selectedUnit.setActiveAttack(1);
       }
       return;
@@ -135,6 +152,7 @@ public class MatchScreen extends Screen {
     if (selectedUnit != null && selectedUnit.getState() == Unit.State.ATTACKING && !selectedUnit.isReachable(x+xd, y+yd)) {
       return;
     }
+    if (activeCursor.isPeeking()) return;
     
     activeCursor.move(xd, yd);
   }

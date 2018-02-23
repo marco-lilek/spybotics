@@ -48,7 +48,7 @@ public class UnitPainter extends EntityPainter {
       }
     }
     
-    if (!unit.isSelected()) return;
+    if (!unit.isSelected() && unit.getState() != State.PEEKING) return;
     
     State unitState = unit.getState();
     switch (unitState) {
@@ -63,6 +63,7 @@ public class UnitPainter extends EntityPainter {
         }
       }
       break;
+    case PEEKING:
     case ATTACKING:
       for (Iterator<IPoint> it = reachableTiles.iterator(); it.hasNext(); ) {
         IPoint p = it.next();
@@ -101,6 +102,7 @@ public class UnitPainter extends EntityPainter {
     case MOVING:
       reachableTiles = ((MatchScreen)unit.getScreen()).getBoard().getAdjacentTiles(new IPoint(unit.gx(), unit.gy()), unit.getRemainingMoves(), unit);
       break;
+    case PEEKING:
     case ATTACKING:
       reachableTiles = ((MatchScreen)unit.getScreen()).getBoard().getAdjacentTiles(new IPoint(unit.gx(), unit.gy()), unit.getAttackRange(), null);
       break;

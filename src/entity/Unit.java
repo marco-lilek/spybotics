@@ -28,6 +28,7 @@ public class Unit extends Entity {
   public enum State {
     IDLE,
     MOVING,
+    PEEKING,
     ATTACKING,
     DONE
   }
@@ -36,6 +37,7 @@ public class Unit extends Entity {
   private final MatchScreen screen;
   private final UnitPainter painter;
   
+  private State prevState;
   private State state;
   private boolean isSelected;
   private int selectedAttack;
@@ -54,6 +56,7 @@ public class Unit extends Entity {
     this.screen = screen;
     this.painter = new UnitPainter(this);
     
+    prevState = State.IDLE;
     state = State.IDLE;
     isSelected = false;
     selectedAttack = 0;
@@ -155,6 +158,12 @@ public class Unit extends Entity {
     return config;
   }
   
+  public void cancel() {
+    state = State.IDLE;
+    isSelected = false;
+    painter.update();
+  }
+  
   public void flipSelected() {
     if (!isSelected && state == State.IDLE) {
       state = State.MOVING;
@@ -211,11 +220,11 @@ public class Unit extends Entity {
   }
   
   public void setActiveAttack(int attackId) {
-    System.out.println(config.attacks);
+    if (state == State.DONE) return;
+    
     if (attackId >= 0 && attackId < config.attacks.size()) {
       selectedAttack = attackId;
     }
-    numRemainingMoves = 0;
     painter.update();
   }
 
@@ -230,6 +239,21 @@ public class Unit extends Entity {
   @Override
   public void redraw(List<Graphics2D> g) {
     painter.redraw(g);
+  }
+
+  public int getSelectedAttack() {
+    return selectedAttack;
+  }
+
+  public void peekAttack() {
+    prevState = state;
+    state = State.PEEKING;
+    painter.update();
+  }
+
+  public void cancelPeek() {
+    state = prevState;
+    painter.update();
   }
 }
 
